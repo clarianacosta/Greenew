@@ -1,0 +1,13 @@
+package com.greenew.produtores;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ProdutoresApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProdutoresApplication.class, args);
+	}
+
+}
