@@ -1,29 +1,58 @@
 package com.greenew.arvores.model.mapper;
 
-import com.greenew.arvores.model.dto.BiomaDTO;
+import com.greenew.arvores.model.dto.BiomaRequestDTO;
+import com.greenew.arvores.model.dto.BiomaResponseDTO;
 import com.greenew.arvores.model.entity.BiomaEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BiomaMapper {
-    public BiomaDTO toDTO(BiomaEntity bioma) {
-        if (bioma == null) {
+
+    /**
+     * Mapeia BiomaEntity para BiomaResponseDTO (Saída da API).
+     */
+    public BiomaResponseDTO toResponseDTO(BiomaEntity entity) {
+        if (entity == null) {
             return null;
         }
-        BiomaDTO dto = new BiomaDTO();
-        dto.setId(bioma.getId());
-        dto.setNome(bioma.getNome());
-        dto.setDescricao(bioma.getDescricao());
-        return dto;
+
+        // Usando o construtor AllArgsConstructor se BiomaResponseDTO for imutável,
+        // ou setters se for mutável (como no seu código):
+        return new BiomaResponseDTO(
+                entity.getId(),
+                entity.getNome(),
+                entity.getDescricao()
+        );
     }
-    public BiomaEntity toEntity(BiomaDTO biomaDTO) {
-        if (biomaDTO == null) {
+
+    /**
+     * Mapeia BiomaRequestDTO para BiomaEntity (Entrada para persistência).
+     */
+    public BiomaEntity toEntity(BiomaRequestDTO requestDTO) {
+        if (requestDTO == null) {
             return null;
         }
+
         BiomaEntity entity = new BiomaEntity();
-        entity.setId(biomaDTO.getId());
-        entity.setNome(biomaDTO.getNome());
-        entity.setDescricao(biomaDTO.getDescricao());
+
+        // O ID não é mapeado do RequestDTO, pois será gerado pelo banco/service.
+        entity.setNome(requestDTO.getNome());
+        entity.setDescricao(requestDTO.getDescricao());
+
         return entity;
+    }
+
+    /**
+     * Mapeia BiomaEntity para BiomaEntity (útil para o método PUT/atualização,
+     * onde a Entity já existe e você só precisa copiar os campos do RequestDTO).
+     */
+    public void updateEntityFromDTO(BiomaRequestDTO requestDTO, BiomaEntity entity) {
+        if (requestDTO == null || entity == null) {
+            return;
+        }
+
+        entity.setNome(requestDTO.getNome());
+        entity.setDescricao(requestDTO.getDescricao());
+        // O ID da Entity existente não deve ser alterado aqui.
     }
 }

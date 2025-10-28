@@ -4,18 +4,20 @@ import com.greenew.arvores.model.dto.ArvoreRequestDTO;
 import com.greenew.arvores.model.dto.ArvoreResponseDTO;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.UUID;
 
 public interface ArvoreService {
     // CREATE
     ArvoreResponseDTO criar(ArvoreRequestDTO arvoreRequestDTO);
 
     // READ
-    ArvoreResponseDTO buscarPorId(Long id);
+    ArvoreResponseDTO buscarPorId(UUID id);
     List<ArvoreResponseDTO> buscarTodas();
 
     // UPDATE
-    ArvoreResponseDTO atualizar(Long id, ArvoreRequestDTO arvoreRequestDTO);
+    ArvoreResponseDTO atualizar(UUID id, ArvoreRequestDTO arvoreRequestDTO);
 
     // DELETE
-    void deletar(Long id);
+    void deletar(UUID id);
 }

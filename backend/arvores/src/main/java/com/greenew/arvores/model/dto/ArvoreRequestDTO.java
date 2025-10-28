@@ -5,11 +5,17 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ArvoreRequestDTO {
 
     @NotBlank(message = "O nome popular não pode ser vazio.")
@@ -37,8 +43,8 @@ public class ArvoreRequestDTO {
     private BigDecimal diametroCopaMedioM;
 
     @NotEmpty(message = "A árvore deve estar associada a pelo menos um bioma.")
-    private Set<Long> biomasIds;
+    private Set<UUID> biomasIds;
 
     @NotEmpty(message = "A árvore deve estar associada a pelo menos um clima.")
-    private Set<Long> climasIds;
+    private Set<UUID> climasIds;
 }

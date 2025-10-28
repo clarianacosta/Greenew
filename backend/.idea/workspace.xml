@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b94f56d3-95f9-4b6c-8814-e08d0806bd3a" name="Changes" comment="adding model, service, repository and controller">
+      <change afterPath="$PROJECT_DIR$/.idea/aws.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/backend.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/lombok.config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/BiomaRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/BiomaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ClimaRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ClimaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/controller/ArvoreControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/controller/BiomaControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/controller/ClimaControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/exception/RecursoNaoEncontradoExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/model/mapper/ArvoreMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/model/mapper/BiomaMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/model/mapper/ClimaMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/service/impl/ArvoreServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/service/impl/BiomaServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/service/impl/ClimaServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/arvores/src/test/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/discovery/src/test/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/lombok.config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/controller/EmpresaController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/exception/RecursoNaoEncontradoException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/model/dto/EmpresaRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/model/dto/EmpresaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/model/entity/EmpresaEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/model/mapper/EmpresaMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/repository/EmpresaRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/service/EmpresaService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/empresas/src/main/java/com/greenew/empresas/service/impl/EmpresaServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gateway/src/test/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/lombok.config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/config/WebClientConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/config/client/ArvoresServiceClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/config/dtos/BiomaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/config/dtos/ClimaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/controller/ProdutorController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/controller/TerrenoController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/exception/RecursoNaoEncontradoException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/dto/ProdutorRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/dto/ProdutorResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/dto/TerrenoRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/dto/TerrenoResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/entity/ProdutorEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/entity/TerrenoEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/mapper/ProdutorMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/model/mapper/TerrenoMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/repository/ProdutorRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/repository/TerrenoRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/service/ProdutorService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/service/TerrenoService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/service/impl/ProdutorServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/service/impl/TerrenoServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/controller/ProdutorControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/controller/TerrenoControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/exception/RecursoNaoEncontradoExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/model/mapper/ProdutorMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/model/mapper/TerrenoMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/service/impl/ProdutorServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/service/impl/TerrenoServiceImplTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/produtores/src/test/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/lombok.config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/WebClientConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/client/ArvoresServiceClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/client/EmpresasServiceClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/client/ProdutoresServiceClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/dto/ArvoreResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/dto/BiomaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/dto/ClimaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/dto/EmpresaResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/config/dto/TerrenoResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/controller/AtividadeEmissoraController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/controller/FatorEmissaoController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/controller/RelatorioGHGController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/exception/RecursoNaoEncontradoException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/AtividadeEmissoraRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/AtividadeEmissoraResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/FatorEmissaoRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/FatorEmissaoResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/RecomendacaoCompensacaoDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/RelatorioGHGRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/dto/RelatorioGHGResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/entity/AtividadeEmissoraEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/entity/FatorEmissaoEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/entity/NivelCompletude.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/entity/RelatorioGHGEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/mapper/AtividadeEmissoraMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/mapper/FatorEmissaoMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/model/mapper/RelatorioGHGMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/repository/AtividadeEmissoraRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/repository/FatorEmissaoRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/repository/RelatorioGHGRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/AtividadeEmissoraService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/CalculoGHGService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/FatorEmissaoService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/RecomendacaoService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/RelatorioGHGService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/impl/AtividadeEmissoraServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/impl/CalculoGHGServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/impl/FatorEmissaoServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/impl/RecomendacaoServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/relatorios/src/main/java/com/greenew/relatorios/service/impl/RelatorioGHGServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/ArvoresApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/ArvoresApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/controller/ArvoreController.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/controller/ArvoreController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/controller/BiomaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/controller/BiomaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/controller/ClimaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/controller/ClimaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ArvoreRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ArvoreRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ArvoreResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ArvoreResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/BiomaDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/dto/ClimaDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/mapper/ArvoreMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/mapper/ArvoreMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/mapper/BiomaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/mapper/BiomaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/mapper/ClimaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/model/mapper/ClimaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/repository/ArvoreRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/repository/ArvoreRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/repository/BiomaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/repository/BiomaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/repository/ClimaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/repository/ClimaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/ArvoreService.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/ArvoreService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/BiomaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/BiomaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/ClimaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/ClimaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/impl/ArvoreServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/impl/ArvoreServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/impl/BiomaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/impl/BiomaServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/impl/ClimaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/java/com/greenew/arvores/service/impl/ClimaServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/ArvoresApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/arvores/src/test/java/com/greenew/arvores/ArvoresApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discovery/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/discovery/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discovery/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/discovery/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discovery/src/main/java/com/greenew/discovery/DiscoveryApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/discovery/src/main/java/com/greenew/discovery/DiscoveryApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discovery/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/discovery/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/empresas/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/empresas/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/empresas/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/empresas/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/empresas/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/empresas/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gateway/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/produtores/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/produtores/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/produtores/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/produtores/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/ProdutoresApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/produtores/src/main/java/com/greenew/produtores/ProdutoresApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/produtores/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/produtores/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/ProdutoresApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/produtores/src/test/java/com/greenew/produtores/ProdutoresApplicationTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Exception" />
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;clarianacosta&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/clarianacosta/Greenew.git&quot;,
+    &quot;accountId&quot;: &quot;903f7a4a-aa54-4a6d-b882-a0207dd7301b&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="customMavenHome" value="\\wsl.localhost\Ubuntu\usr\share\maven" />
+        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="delegateBuildToMaven" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="31f70fgkyBWgNGN3b5EtbCNFGJf" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.arvores [clean,test,jacoco:report].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.arvores [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.arvores [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.arvores [test].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.arvores [validate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.arvores [verify].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.discovery [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.discovery [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.empresas [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.gateway [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.produtores [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.produtores [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.produtores [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.produtores [verify].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.relatorios [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.relatorios [install].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Arvores.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ArvoresApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.DiscoveryApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.EmpresasApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.Produtores.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ProdutoresApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.Relatorios.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.RelatoriosApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;//wsl.localhost/Ubuntu/home/clari/academics/greenew/code/backend/relatorios/src/main/java/com/greenew/relatorios&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.build.tools.auto.reload&quot;: &quot;SELECTIVE&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="\\wsl.localhost\Ubuntu\home\clari\academics\greenew\code\backend\relatorios\src\main\java\com\greenew\relatorios" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean test jacoco:report" />
+    </option>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="KtorApplicationConfigurationType" />
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+    <option name="configurationStatuses">
+      <map>
+        <entry key="SpringBootApplicationConfigurationType">
+          <value>
+            <map>
+              <entry key="Arvores" value="STOPPED" />
+              <entry key="DiscoveryApplication" value="STOPPED" />
+              <entry key="EmpresasApplication" value="STOPPED" />
+              <entry key="GatewayApplication" value="STOPPED" />
+              <entry key="Produtores" value="STOPPED" />
+              <entry key="Relatorios" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.Produtores">
+    <configuration name="Relatorios" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../../../../../usr/lib/jvm/java-21-openjdk-amd64" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="com.greenew.relatorios.RelatoriosApplication" />
+      <module name="relatorios" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Arvores" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="arvores" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.greenew.arvores.ArvoresApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DiscoveryApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="discovery" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.greenew.discovery.DiscoveryApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EmpresasApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="empresas" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.greenew.empresas.EmpresasApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.greenew.gateway.GatewayApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Produtores" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="produtores" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.greenew.produtores.ProdutoresApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Relatorios" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../../../../../usr/lib/jvm/java-21-openjdk-amd64" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <module name="relatorios" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.greenew.relatorios.RelatoriosApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Relatorios" />
+      <item itemvalue="Spring Boot.Relatorios" />
+      <item itemvalue="Spring Boot.Arvores" />
+      <item itemvalue="Spring Boot.DiscoveryApplication" />
+      <item itemvalue="Spring Boot.EmpresasApplication" />
+      <item itemvalue="Spring Boot.GatewayApplication" />
+      <item itemvalue="Spring Boot.Produtores" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b94f56d3-95f9-4b6c-8814-e08d0806bd3a" name="Changes" comment="" />
+      <created>1755903054569</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1755903054569</updated>
+      <workItem from="1755903056403" duration="364000" />
+      <workItem from="1755903439486" duration="864000" />
+      <workItem from="1755904335926" duration="1771000" />
+      <workItem from="1756161496898" duration="9636000" />
+      <workItem from="1757114900143" duration="4218000" />
+      <workItem from="1757632037513" duration="994000" />
+      <workItem from="1757633094379" duration="751000" />
+      <workItem from="1758117736374" duration="883000" />
+      <workItem from="1758118662757" duration="775000" />
+      <workItem from="1758119477490" duration="428000" />
+      <workItem from="1758119921867" duration="1965000" />
+      <workItem from="1758652297866" duration="2449000" />
+      <workItem from="1758655566911" duration="11000" />
+      <workItem from="1758655608552" duration="15197000" />
+      <workItem from="1758767160062" duration="2551000" />
+      <workItem from="1758769776393" duration="278000" />
+      <workItem from="1758770807421" duration="1277000" />
+      <workItem from="1758773359084" duration="146000" />
+      <workItem from="1758773944526" duration="30996000" />
+      <workItem from="1759102770079" duration="1503000" />
+      <workItem from="1759319686852" duration="2007000" />
+      <workItem from="1759443535199" duration="4522000" />
+    </task>
+    <task id="LOCAL-00001" summary="adding model, service, repository and controller">
+      <option name="closed" value="true" />
+      <created>1755905398154</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1755905398154</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TerminalProjectNonSharedOptionsProvider">
+    <option name="shellPath" value="wsl.exe -d Ubuntu" />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor:reactor-core" />
+    <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-context" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:javax.validation:validation-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.ws.rs:jakarta.ws.rs-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="adding model, service, repository and controller" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding model, service, repository and controller" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="\\wsl.localhost\Ubuntu\home\clari\academics\greenew\code\backend\arvores\target\site\jacoco\jacoco.xml" NAME="jacoco.xml" MODIFIED="1756162942274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="jacoco_xml_report" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+  </component>
+</project>

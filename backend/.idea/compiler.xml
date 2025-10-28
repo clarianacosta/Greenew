@@ -10,6 +10,7 @@
         <module name="empresas" />
         <module name="arvores" />
         <module name="produtores" />
+        <module name="relatorios" />
         <module name="discovery" />
         <module name="gateway" />
       </profile>

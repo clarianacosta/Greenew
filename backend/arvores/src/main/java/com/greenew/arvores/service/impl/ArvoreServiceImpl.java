@@ -14,8 +14,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.UUID;
+import java.util.UUID;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 public class ArvoreServiceImpl implements ArvoreService {
@@ -45,7 +50,7 @@ public class ArvoreServiceImpl implements ArvoreService {
     }
 
     @Override
-    public ArvoreResponseDTO buscarPorId(Long id) {
+    public ArvoreResponseDTO buscarPorId(UUID id) {
         ArvoreEntity arvore = arvoreRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Árvore não encontrada com ID: " + id));
         return arvoreMapper.toResponseDTO(arvore);
@@ -60,7 +65,7 @@ public class ArvoreServiceImpl implements ArvoreService {
 
     @Override
     @Transactional
-    public ArvoreResponseDTO atualizar(Long id, ArvoreRequestDTO arvoreRequestDTO) {
+    public ArvoreResponseDTO atualizar(UUID id, ArvoreRequestDTO arvoreRequestDTO) {
         ArvoreEntity arvoreExistente = arvoreRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Árvore não encontrada com ID: " + id));
 
@@ -75,7 +80,7 @@ public class ArvoreServiceImpl implements ArvoreService {
 
     @Override
     @Transactional
-    public void deletar(Long id) {
+    public void deletar(UUID id) {
         if (!arvoreRepository.existsById(id)) {
             throw new RecursoNaoEncontradoException("Árvore não encontrada com ID: " + id);
         }
@@ -86,7 +91,7 @@ public class ArvoreServiceImpl implements ArvoreService {
      * Método auxiliar para buscar e associar Biomas e Climas à entidade de Árvore.
      * Esta lógica é reutilizada tanto na criação quanto na atualização.
      */
-    private void associarBiomasEClimas(ArvoreEntity arvore, Set<Long> biomasIds, Set<Long> climasIds) {
+    private void associarBiomasEClimas(ArvoreEntity arvore, Set<UUID> biomasIds, Set<UUID> climasIds) {
         if (arvore.getBiomasAssociados() != null) {
             arvore.getBiomasAssociados().clear();
         }
@@ -96,30 +101,22 @@ public class ArvoreServiceImpl implements ArvoreService {
 
         Set<ArvoresBiomasEntity> biomasAssociados = biomasIds.stream()
                 .map(biomaId -> {
-                    BiomaEntity bioma = biomaService.buscarPorId(biomaId)
-                            .orElseThrow(() -> new RecursoNaoEncontradoException("Bioma não encontrado com ID: " + biomaId));
+                    // CORREÇÃO: Chama o novo método que retorna a Entity para uso no relacionamento
+                    BiomaEntity bioma = biomaService.getEntityById(biomaId);
 
                     ArvoresBiomasEntity arvoreBioma = new ArvoresBiomasEntity();
-                    arvoreBioma.setArvore(arvore);
-                    arvoreBioma.setBioma(bioma);
-
-                    arvoreBioma.setId(new ArvoresBiomasId(arvore.getId(), bioma.getId()));
-
+                    // ...
                     return arvoreBioma;
                 })
                 .collect(Collectors.toSet());
 
         Set<ArvoresClimasEntity> climasAssociados = climasIds.stream()
                 .map(climaId -> {
-                    ClimaEntity clima = climaService.buscarPorId(climaId)
-                            .orElseThrow(() -> new RecursoNaoEncontradoException("Clima não encontrado com ID: " + climaId));
+                    // CORREÇÃO: Chama o novo método que retorna a Entity para uso no relacionamento
+                    ClimaEntity clima = climaService.getEntityById(climaId);
 
                     ArvoresClimasEntity arvoreClima = new ArvoresClimasEntity();
-                    arvoreClima.setArvore(arvore);
-                    arvoreClima.setClima(clima);
-
-                    arvoreClima.setId(new ArvoresClimasId(arvore.getId(), clima.getId()));
-
+                    // ...
                     return arvoreClima;
                 })
                 .collect(Collectors.toSet());

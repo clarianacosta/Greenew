@@ -2,8 +2,8 @@ package com.greenew.arvores.model.mapper;
 
 import com.greenew.arvores.model.dto.ArvoreRequestDTO;
 import com.greenew.arvores.model.dto.ArvoreResponseDTO;
-import com.greenew.arvores.model.dto.BiomaDTO;
-import com.greenew.arvores.model.dto.ClimaDTO;
+import com.greenew.arvores.model.dto.BiomaResponseDTO;
+import com.greenew.arvores.model.dto.ClimaResponseDTO;
 import com.greenew.arvores.model.entity.ArvoreEntity;
 import com.greenew.arvores.model.entity.ArvoresBiomasEntity;
 import com.greenew.arvores.model.entity.ArvoresClimasEntity;
@@ -69,23 +69,25 @@ public class ArvoreMapper {
     }
 
     // --- Métodos Auxiliares para conversão dos Sets ---
-    private Set<BiomaDTO> mapBiomas(Set<ArvoresBiomasEntity> biomasAssociados) {
+    private Set<BiomaResponseDTO> mapBiomas(Set<ArvoresBiomasEntity> biomasAssociados) {
         if (biomasAssociados == null) {
             return Collections.emptySet();
         }
         return biomasAssociados.stream()
                 .map(ArvoresBiomasEntity::getBioma)
-                .map(biomaMapper::toDTO)
+                // CORREÇÃO: Usar toResponseDTO conforme a nova padronização do mapper
+                .map(biomaMapper::toResponseDTO)
                 .collect(Collectors.toSet());
     }
 
-    private Set<ClimaDTO> mapClimas(Set<ArvoresClimasEntity> climasAssociados) {
+    private Set<ClimaResponseDTO> mapClimas(Set<ArvoresClimasEntity> climasAssociados) {
         if (climasAssociados == null) {
             return Collections.emptySet();
         }
         return climasAssociados.stream()
                 .map(ArvoresClimasEntity::getClima)
-                .map(climaMapper::toDTO)
+                // CORREÇÃO: Usar toResponseDTO conforme a nova padronização do mapper
+                .map(climaMapper::toResponseDTO)
                 .collect(Collectors.toSet());
     }
 }

@@ -1,0 +1,39 @@
+{
+    "folders": [
+        {
+            "name": "Gateway",
+            "path": "./gateway"
+        },
+        {
+            "name": "Discovery",
+            "path": "./discovery"
+        },
+        {
+            "name": "Empresas",
+            "path": "./empresas"
+        },
+        {
+            "name": "Arvores",
+            "path": "./arvores"
+        },
+        {
+            "name": "Produtores",
+            "path": "./produtores"
+        }
+    ],
+    "settings": {
+        "java.configuration.workspaceCacheLimit": 90,
+        "spring-boot.ls.problem.application-properties.unknown-property": "ignore",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "java.configuration.detectJdksAtStart": true,
+        "spring.initializr.defaultLanguage": "Java"
+    },
+    "extensions": {
+        "recommendations": [
+            "vscjava.vscode-spring-boot-dashboard",
+            "vmware.vscode-spring-boot",
+            "vscjava.vscode-spring-initializr",
+            "vscjava.vscode-java-pack"
+        ]
+    }
+}

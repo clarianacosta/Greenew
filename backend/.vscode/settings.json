@@ -1,0 +1,21 @@
+{
+    "java.configuration.workspaceCacheLimit": 90,
+    "spring-boot.ls.problem.application-properties.unknown-property": "ignore",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.detectJdksAtStart": true,
+    "spring.initializr.defaultLanguage": "Java",
+    "java.project.sourcePaths": [
+        "gateway/src",
+        "discovery/src",
+        "empresas/src",
+        "arvores/src",
+        "produtores/src"
+    ],
+    "java.project.referencedLibraries": [
+        "gateway/target/dependency/*.jar",
+        "discovery/target/dependency/*.jar",
+        "empresas/target/dependency/*.jar",
+        "arvores/target/dependency/*.jar",
+        "produtores/target/dependency/*.jar"
+    ]
+}

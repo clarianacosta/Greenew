@@ -1,8 +1,10 @@
 package com.greenew.arvores.controller;
 
-import com.greenew.arvores.model.dto.BiomaDTO;
+import com.greenew.arvores.model.dto.BiomaRequestDTO; // NOVO: Para o corpo da requisição
+import com.greenew.arvores.model.dto.BiomaResponseDTO;
 import com.greenew.arvores.service.BiomaService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,25 +22,31 @@ public class BiomaController {
     }
 
     @PostMapping
-    public ResponseEntity<BiomaDTO> criarBioma(@Valid @RequestBody BiomaDTO biomaDTO) {
-        BiomaDTO biomaCriado = biomaService.criar(biomaDTO);
+    public ResponseEntity<BiomaResponseDTO> criarBioma(@Valid @RequestBody BiomaRequestDTO biomaRequestDTO) {
+        BiomaResponseDTO biomaCriado = biomaService.criar(biomaRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(biomaCriado);
     }
 
     @GetMapping
-    public ResponseEntity<List<BiomaDTO>> buscarTodosBiomas() {
-        List<BiomaDTO> biomas = biomaService.buscarTodos();
+    public ResponseEntity<List<BiomaResponseDTO>> buscarTodosBiomas() {
+        List<BiomaResponseDTO> biomas = biomaService.buscarTodos();
         return ResponseEntity.ok(biomas);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BiomaResponseDTO> buscarBiomaPorId(@PathVariable UUID id) {
+        BiomaResponseDTO bioma = biomaService.buscarPorId(id);
+        return ResponseEntity.ok(bioma);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<BiomaDTO> atualizarBioma(@PathVariable Long id, @Valid @RequestBody BiomaDTO biomaDTO) {
-        BiomaDTO biomaAtualizado = biomaService.atualizar(id, biomaDTO);
+    public ResponseEntity<BiomaResponseDTO> atualizarBioma(@PathVariable UUID id, @Valid @RequestBody BiomaRequestDTO biomaRequestDTO) {
+        BiomaResponseDTO biomaAtualizado = biomaService.atualizar(id, biomaRequestDTO);
         return ResponseEntity.ok(biomaAtualizado);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarBioma(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarBioma(@PathVariable UUID id) {
         biomaService.deletar(id);
         return ResponseEntity.noContent().build();
     }
