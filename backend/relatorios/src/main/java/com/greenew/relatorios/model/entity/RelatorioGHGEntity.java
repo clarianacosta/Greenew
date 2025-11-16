@@ -37,7 +37,9 @@ public class RelatorioGHGEntity {
     @Column(nullable = false)
     private NivelCompletude nivel;
 
-    // Campos para armazenar a recomendação gerada
+    @Column(name = "arvore_id_recomendada", nullable = true)
+    private UUID arvoreIdRecomendada;
+
     @Column(name = "arvore_recomendada", nullable = true)
     private String arvoreRecomendada;
 

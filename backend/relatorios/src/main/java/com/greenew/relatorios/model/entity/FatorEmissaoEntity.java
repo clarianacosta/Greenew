@@ -30,6 +30,12 @@ public class FatorEmissaoEntity {
     @Column(nullable = false)
     private String unidade;
 
+    @Column(nullable = false)
+    private Integer escopo;
+
+    @Column(name = "categoria_escopo3", nullable = true)
+    private Integer categoriaEscopo3;
+
     @Column(name = "fator_co2", nullable = false, precision = 15, scale = 8)
     private BigDecimal fatorCo2; // Emissão de CO₂ em kg por unidade
 

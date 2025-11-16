@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 public class FatorEmissaoMapper {
 
     public FatorEmissaoResponseDTO toResponseDTO(FatorEmissaoEntity entity) {
-        if (entity == null) {
-            return null;
-        }
+        if (entity == null) return null;
         FatorEmissaoResponseDTO dto = new FatorEmissaoResponseDTO();
         dto.setId(entity.getId());
         dto.setNomeAtividade(entity.getNomeAtividade());
         dto.setUnidade(entity.getUnidade());
+        dto.setEscopo(entity.getEscopo());
+        dto.setCategoriaEscopo3(entity.getCategoriaEscopo3());
         dto.setFatorCo2(entity.getFatorCo2());
         dto.setFatorCh4(entity.getFatorCh4());
         dto.setFatorN2o(entity.getFatorN2o());
@@ -24,12 +24,12 @@ public class FatorEmissaoMapper {
     }
 
     public FatorEmissaoEntity toEntity(FatorEmissaoRequestDTO dto) {
-        if (dto == null) {
-            return null;
-        }
+        if (dto == null) return null;
         FatorEmissaoEntity entity = new FatorEmissaoEntity();
         entity.setNomeAtividade(dto.getNomeAtividade());
         entity.setUnidade(dto.getUnidade());
+        entity.setEscopo(dto.getEscopo());
+        entity.setCategoriaEscopo3(dto.getCategoriaEscopo3());
         entity.setFatorCo2(dto.getFatorCo2());
         entity.setFatorCh4(dto.getFatorCh4());
         entity.setFatorN2o(dto.getFatorN2o());
@@ -38,11 +38,11 @@ public class FatorEmissaoMapper {
     }
 
     public void updateEntityFromDTO(FatorEmissaoRequestDTO dto, FatorEmissaoEntity entity) {
-        if (dto == null || entity == null) {
-            return;
-        }
+        if (dto == null || entity == null) return;
         entity.setNomeAtividade(dto.getNomeAtividade());
         entity.setUnidade(dto.getUnidade());
+        entity.setEscopo(dto.getEscopo());
+        entity.setCategoriaEscopo3(dto.getCategoriaEscopo3());
         entity.setFatorCo2(dto.getFatorCo2());
         entity.setFatorCh4(dto.getFatorCh4());
         entity.setFatorN2o(dto.getFatorN2o());

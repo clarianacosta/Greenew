@@ -9,6 +9,8 @@ public class FatorEmissaoResponseDTO {
     private UUID id;
     private String nomeAtividade;
     private String unidade;
+    private Integer escopo;
+    private Integer categoriaEscopo3;
     private BigDecimal fatorCo2;
     private BigDecimal fatorCh4;
     private BigDecimal fatorN2o;

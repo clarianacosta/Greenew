@@ -1,8 +1,6 @@
 package com.greenew.relatorios.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
 
@@ -13,6 +11,12 @@ public class FatorEmissaoRequestDTO {
 
     @NotBlank
     private String unidade;
+
+    @NotNull
+    @Min(1) @Max(3)
+    private Integer escopo;
+
+    private Integer categoriaEscopo3;
 
     @NotNull @PositiveOrZero
     private BigDecimal fatorCo2;

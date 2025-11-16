@@ -98,10 +98,9 @@ public class RelatorioGHGController {
     @PostMapping("/{relatorioId}/atribuir-recomendacao")
     public ResponseEntity<RelatorioGHGResponseDTO> atribuirRecomendacao(
             @PathVariable UUID relatorioId,
-            @RequestParam UUID terrenoId,
-            @RequestParam String nomeArvore) {
+            @RequestParam UUID arvoreId) {
 
-        RelatorioGHGResponseDTO relatorioAtualizado = service.atribuirRecomendacao(relatorioId, terrenoId, nomeArvore);
+        RelatorioGHGResponseDTO relatorioAtualizado = service.atribuirRecomendacao(relatorioId, arvoreId);
         return ResponseEntity.ok(relatorioAtualizado);
     }
 }

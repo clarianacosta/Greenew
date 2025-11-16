@@ -21,7 +21,7 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
     private final ProdutoresServiceClient produtoresServiceClient;
 
     // Assumindo 1 Hectare = 10.000 m²
-    private static final BigDecimal METROS_QUADRADOS_POR_HECTARE = new BigDecimal("10000");
+    protected static final BigDecimal METROS_QUADRADOS_POR_HECTARE = new BigDecimal("10000");
 
     // Constantes de Normalização de Score
 
@@ -106,10 +106,11 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
 
         BigDecimal custoTotal = arvore.getCustoMedioMuda().multiply(new BigDecimal(quantidadeNecessaria));
 
-        double areaPorArvoreM2 = calcularAreaPorArvore(arvore);
+        double areaPorArvoreM2 = this.calcularAreaPorArvore(arvore);
         BigDecimal areaTotalNecessariaM2 = new BigDecimal(areaPorArvoreM2 * quantidadeNecessaria);
-        BigDecimal areaTotalNecessariaHectares = areaTotalNecessariaM2.divide(METROS_QUADRADOS_POR_HECTARE, 4, RoundingMode.HALF_UP);
-
+        BigDecimal areaTotalNecessariaHectares = areaTotalNecessariaM2.divide(
+                RecomendacaoService.METROS_QUADRADOS_POR_HECTARE, 4, RoundingMode.HALF_UP
+        );
         List<TerrenoResponseDTO> terrenosCompativeis = todosOsTerrenos.stream()
                 .filter(terreno -> terrenoCompativel(terreno, arvore, areaTotalNecessariaHectares))
                 .collect(Collectors.toList());
@@ -124,6 +125,21 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
         dto.setTerrenosCompatíveis(terrenosCompativeis);
 
         return dto;
+    }
+
+    @Override
+    public List<TerrenoResponseDTO> buscarTerrenosCompativeis(ArvoreResponseDTO arvore, BigDecimal areaNecessariaHectares) {
+        // 1. Busca todos os terrenos (do cache ou serviço)
+        List<TerrenoResponseDTO> todosOsTerrenos = produtoresServiceClient.buscarTodosTerrenos();
+
+        if (todosOsTerrenos == null || todosOsTerrenos.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 2. Filtra usando a lógica de compatibilidade que já existe
+        return todosOsTerrenos.stream()
+                .filter(terreno -> terrenoCompativel(terreno, arvore, areaNecessariaHectares))
+                .collect(Collectors.toList());
     }
 
     private boolean terrenoCompativel(TerrenoResponseDTO terreno, ArvoreResponseDTO arvore, BigDecimal areaTotalNecessariaHectares) {
@@ -142,7 +158,8 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
         return biomaCompativel && climaCompativel && areaCompativel;
     }
 
-    private double calcularAreaPorArvore(ArvoreResponseDTO arvore) {
+    @Override
+    public double calcularAreaPorArvore(ArvoreResponseDTO arvore) {
         double raioCopa = arvore.getDiametroCopaMedioM().doubleValue() / 2.0;
         // Adiciona um fator de espaçamento (ex: 1.5x o raio) para desconsiderar o plantio de avrores coladas
         double raioComEspacamento = raioCopa * 1.5;
@@ -167,7 +184,7 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
         // Calcula a área da copa (com o fator de espaçamento de 1.5x o raio)
         double raioCopa = arvore.getDiametroCopaMedioM().doubleValue() / 2.0;
         double raioComEspacamento = raioCopa * 1.5;
-        double areaCopaM2 = (Math.PI * raioComEspacamento * raioComEspacamento);
+        double areaCopaM2 = this.calcularAreaPorArvore(arvore);
 
         // Normaliza o score de espaço
         double scoreEspaco = 1.0 - (areaCopaM2 / MAX_AREA_ESPERADA_M2);

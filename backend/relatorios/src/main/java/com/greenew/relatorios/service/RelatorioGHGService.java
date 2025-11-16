@@ -17,5 +17,5 @@ public interface RelatorioGHGService {
     //RelatorioGHGResponseDTO finalizarRelatorio(UUID relatorioId, UUID terrenoId, Set<Integer> escopos);
     RelatorioCalculadoDTO calcularEmissoesRelatorio(UUID relatorioId, Set<Integer> escopos);
     List<RecomendacaoRanqueadaDTO> buscarRecomendacoes(UUID relatorioId);
-    RelatorioGHGResponseDTO atribuirRecomendacao(UUID relatorioId, UUID terrenoId, String nomeArvore);
+    RelatorioGHGResponseDTO atribuirRecomendacao(UUID relatorioId, UUID arvoreId);
 }

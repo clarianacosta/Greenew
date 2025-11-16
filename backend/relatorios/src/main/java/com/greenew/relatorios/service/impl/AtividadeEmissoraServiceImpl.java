@@ -4,9 +4,11 @@ import com.greenew.relatorios.exception.RecursoNaoEncontradoException;
 import com.greenew.relatorios.model.dto.AtividadeEmissoraRequestDTO;
 import com.greenew.relatorios.model.dto.AtividadeEmissoraResponseDTO;
 import com.greenew.relatorios.model.entity.AtividadeEmissoraEntity;
+import com.greenew.relatorios.model.entity.FatorEmissaoEntity;
 import com.greenew.relatorios.model.entity.RelatorioGHGEntity;
 import com.greenew.relatorios.model.mapper.AtividadeEmissoraMapper;
 import com.greenew.relatorios.repository.AtividadeEmissoraRepository;
+import com.greenew.relatorios.repository.FatorEmissaoRepository;
 import com.greenew.relatorios.repository.RelatorioGHGRepository;
 import com.greenew.relatorios.service.AtividadeEmissoraService;
 import org.springframework.stereotype.Service;
@@ -23,20 +25,35 @@ public class AtividadeEmissoraServiceImpl implements AtividadeEmissoraService {
     private final AtividadeEmissoraRepository atividadeRepository;
     private final RelatorioGHGRepository relatorioGHGRepository;
     private final AtividadeEmissoraMapper atividadeMapper;
+    private final FatorEmissaoRepository fatorEmissaoRepository;
 
-    public AtividadeEmissoraServiceImpl(AtividadeEmissoraRepository aRepo, RelatorioGHGRepository rRepo, AtividadeEmissoraMapper aMapper) {
+    public AtividadeEmissoraServiceImpl(AtividadeEmissoraRepository aRepo, RelatorioGHGRepository rRepo, AtividadeEmissoraMapper aMapper, FatorEmissaoRepository fRepo) {
         this.atividadeRepository = aRepo;
         this.relatorioGHGRepository = rRepo;
         this.atividadeMapper = aMapper;
+        this.fatorEmissaoRepository = fRepo;
     }
 
     @Override
     public AtividadeEmissoraResponseDTO adicionarAtividade(UUID relatorioId, AtividadeEmissoraRequestDTO requestDTO) {
+        // 1. Busca o Relatório (pai)
         RelatorioGHGEntity relatorio = relatorioGHGRepository.findById(relatorioId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório GHG não encontrado com ID: " + relatorioId));
 
-        AtividadeEmissoraEntity novaAtividade = atividadeMapper.toEntity(requestDTO);
+        // 2. Busca o Fator de Emissão (dado mestre)
+        FatorEmissaoEntity fator = fatorEmissaoRepository.findById(requestDTO.getFatorEmissaoId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Fator de Emissão não encontrado com ID: " + requestDTO.getFatorEmissaoId()));
+
+        // 3. Cria a nova Atividade
+        AtividadeEmissoraEntity novaAtividade = new AtividadeEmissoraEntity();
         novaAtividade.setRelatorio(relatorio);
+        novaAtividade.setQuantidade(requestDTO.getQuantidade());
+
+        // 4. Faz o "Snapshot" dos dados do Fator para a Atividade
+        novaAtividade.setNome(fator.getNomeAtividade());
+        novaAtividade.setUnidade(fator.getUnidade());
+        novaAtividade.setEscopo(fator.getEscopo());
+        novaAtividade.setCategoriaEscopo3(fator.getCategoriaEscopo3());
 
         AtividadeEmissoraEntity atividadeSalva = atividadeRepository.save(novaAtividade);
         return atividadeMapper.toResponseDTO(atividadeSalva);
@@ -67,13 +84,16 @@ public class AtividadeEmissoraServiceImpl implements AtividadeEmissoraService {
         AtividadeEmissoraEntity entity = atividadeRepository.findById(atividadeId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Atividade de Emissão não encontrada com ID: " + atividadeId));
 
-        // O mapper precisa de um método update
-        // atividadeMapper.updateEntityFromDTO(requestDTO, entity);
-        entity.setNome(requestDTO.getNome());
-        entity.setEscopo(requestDTO.getEscopo());
-        entity.setCategoriaEscopo3(requestDTO.getCategoriaEscopo3());
-        entity.setUnidade(requestDTO.getUnidade());
+        // Busca o novo fator de emissão
+        FatorEmissaoEntity fator = fatorEmissaoRepository.findById(requestDTO.getFatorEmissaoId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Fator de Emissão não encontrado com ID: " + requestDTO.getFatorEmissaoId()));
+
+        // Atualiza os dados
         entity.setQuantidade(requestDTO.getQuantidade());
+        entity.setNome(fator.getNomeAtividade());
+        entity.setUnidade(fator.getUnidade());
+        entity.setEscopo(fator.getEscopo());
+        entity.setCategoriaEscopo3(fator.getCategoriaEscopo3());
 
         return atividadeMapper.toResponseDTO(atividadeRepository.save(entity));
     }

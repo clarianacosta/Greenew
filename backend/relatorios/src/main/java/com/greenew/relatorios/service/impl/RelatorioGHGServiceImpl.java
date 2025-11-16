@@ -1,6 +1,10 @@
 package com.greenew.relatorios.service.impl;
 
+import com.greenew.relatorios.config.client.ArvoresServiceClient;
 import com.greenew.relatorios.config.client.EmpresasServiceClient;
+import com.greenew.relatorios.config.client.ProdutoresServiceClient;
+import com.greenew.relatorios.config.dto.ArvoreResponseDTO;
+import com.greenew.relatorios.config.dto.TerrenoResponseDTO;
 import com.greenew.relatorios.exception.RecursoNaoEncontradoException;
 import com.greenew.relatorios.model.dto.*;
 import com.greenew.relatorios.model.entity.NivelCompletude;
@@ -13,6 +17,8 @@ import com.greenew.relatorios.service.RelatorioGHGService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -27,13 +33,17 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
     private final CalculoGHGService calculoService;
     private final RecomendacaoService recomendacaoService;
     private final EmpresasServiceClient empresasServiceClient;
+    private final ArvoresServiceClient arvoresServiceClient;
+    private final ProdutoresServiceClient produtoresServiceClient;
 
-    public RelatorioGHGServiceImpl(RelatorioGHGRepository rRepo, RelatorioGHGMapper rMapper, CalculoGHGService cService, RecomendacaoService recService, EmpresasServiceClient eClient) {
+    public RelatorioGHGServiceImpl(RelatorioGHGRepository rRepo, RelatorioGHGMapper rMapper, CalculoGHGService cService, RecomendacaoService recService, EmpresasServiceClient eClient, ArvoresServiceClient arvoresServiceClient, ProdutoresServiceClient produtoresServiceClient) {
         this.relatorioRepository = rRepo;
         this.relatorioMapper = rMapper;
         this.calculoService = cService;
         this.recomendacaoService = recService;
         this.empresasServiceClient = eClient;
+        this.arvoresServiceClient = arvoresServiceClient;
+        this.produtoresServiceClient = produtoresServiceClient;
     }
 
     @Override
@@ -67,9 +77,10 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
     @Override
     @Transactional(readOnly = true)
     public RelatorioGHGResponseDTO buscarPorId(UUID relatorioId) {
-        return relatorioRepository.findById(relatorioId)
-                .map(relatorioMapper::toResponseDTO)
+        RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
+
+        return hidratarDTOComTerrenos(relatorio);
     }
 
     @Override
@@ -80,8 +91,37 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
 
         // 2. Converte a lista de entidades para uma lista de DTOs
         return relatoriosDaEmpresa.stream()
-                .map(relatorioMapper::toResponseDTO)
+                .map(this::hidratarDTOComTerrenos)
                 .collect(Collectors.toList());
+    }
+
+    private RelatorioGHGResponseDTO hidratarDTOComTerrenos(RelatorioGHGEntity entity) {
+        // 1. Mapeamento básico
+        RelatorioGHGResponseDTO dto = relatorioMapper.toResponseDTO(entity);
+
+        // 2. Verifica se uma árvore já foi atribuída
+        if (entity.getArvoreIdRecomendada() != null) {
+            try {
+                // 3. Busca a árvore
+                ArvoreResponseDTO arvore = arvoresServiceClient.buscarArvorePorId(entity.getArvoreIdRecomendada());
+
+                // 4. Calcula a área necessária
+                double areaM2 = recomendacaoService.calcularAreaPorArvore(arvore);
+                BigDecimal areaHectares = new BigDecimal(areaM2 * entity.getQuantidadeNecessaria())
+                        .divide(RecomendacaoService.METROS_QUADRADOS_POR_HECTARE, 4, RoundingMode.HALF_UP);
+
+                // 5. Busca e anexa os terrenos compatíveis
+                List<TerrenoResponseDTO> terrenos = recomendacaoService.buscarTerrenosCompativeis(arvore, areaHectares);
+                dto.setTerrenosCompativeis(terrenos);
+
+            } catch (Exception e) {
+                // Se a árvore ou terrenos não puderem ser buscados, loga o erro mas não quebra a requisição
+                System.err.println("Falha ao hidratar terrenos compatíveis para o relatório " + entity.getId() + ": " + e.getMessage());
+                dto.setTerrenosCompativeis(Collections.emptyList());
+            }
+        }
+
+        return dto;
     }
 
     @Override
@@ -131,37 +171,40 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
     }
 
     @Override
-    public RelatorioGHGResponseDTO atribuirRecomendacao(UUID relatorioId, UUID terrenoId, String nomeArvore) {
+    public RelatorioGHGResponseDTO atribuirRecomendacao(UUID relatorioId, UUID arvoreId) {
+        // 1. Busca o relatório
         RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
 
+        // 2. Valida se o cálculo já foi feito
         if (relatorio.getEmissaoCalculadaCo2e() == null || relatorio.getEmissaoCalculadaCo2e().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalStateException("As emissões devem ser calculadas antes de atribuir uma recomendação.");
         }
 
-        // Recalcula a recomendação específica escolhida para garantir os dados
-        // (Esta é uma simplificação; o ideal seria receber o DTO da recomendação escolhida)
+        // 3. Busca a árvore escolhida
+        ArvoreResponseDTO arvore = arvoresServiceClient.buscarArvorePorId(arvoreId);
 
-        List<RecomendacaoRanqueadaDTO> ranking = recomendacaoService.gerarRankingRecomendacoes(relatorio.getEmissaoCalculadaCo2e());
+        // 4. Cálculo de Quantidade e Custo
+        BigDecimal absorcaoTotalPorArvore = arvore.getTaxaAbsorcaoCo2Anual()
+                .multiply(new BigDecimal(arvore.getTempoMaturidadeAnos()));
 
-        RecomendacaoRanqueadaDTO recomendacaoEscolhida = ranking.stream()
-                .filter(r -> r.getArvore().getNomePopular().equals(nomeArvore))
-                .findFirst()
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Recomendação com a árvore " + nomeArvore + " não é válida para este relatório."));
-
-        // Valida se o terreno escolhido está na lista de compatíveis
-        boolean terrenoValido = recomendacaoEscolhida.getTerrenosCompatíveis().stream()
-                .anyMatch(t -> t.getId().equals(terrenoId));
-
-        if (!terrenoValido) {
-            throw new IllegalArgumentException("O terreno selecionado não é compatível com a árvore e área necessárias.");
+        if (absorcaoTotalPorArvore.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("A árvore selecionada não possui taxa de absorção válida.");
         }
 
-        // Salva a recomendação no relatório
-        relatorio.setArvoreRecomendada(recomendacaoEscolhida.getArvore().getNomePopular());
-        relatorio.setQuantidadeNecessaria(recomendacaoEscolhida.getQuantidadeNecessaria());
-        relatorio.setCustoTotalEstimado(recomendacaoEscolhida.getCustoTotalEstimado());
+        long quantidadeNecessaria = relatorio.getEmissaoCalculadaCo2e()
+                .divide(absorcaoTotalPorArvore, 0, RoundingMode.CEILING).longValue();
 
+        BigDecimal custoTotalEstimado = arvore.getCustoMedioMuda()
+                .multiply(new BigDecimal(quantidadeNecessaria));
+
+        // 5. Salva os dados da árvore no relatório
+        relatorio.setArvoreIdRecomendada(arvore.getId());
+        relatorio.setArvoreRecomendada(arvore.getNomePopular());
+        relatorio.setQuantidadeNecessaria(quantidadeNecessaria);
+        relatorio.setCustoTotalEstimado(custoTotalEstimado);
+
+        // 6. Salva e retorna
         return relatorioMapper.toResponseDTO(relatorioRepository.save(relatorio));
     }
 }
