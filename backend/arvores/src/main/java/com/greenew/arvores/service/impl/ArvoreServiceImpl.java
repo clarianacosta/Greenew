@@ -15,12 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.UUID;
-import java.util.UUID;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.UUID;
 
 @Service
 public class ArvoreServiceImpl implements ArvoreService {
@@ -92,36 +88,62 @@ public class ArvoreServiceImpl implements ArvoreService {
      * Esta lógica é reutilizada tanto na criação quanto na atualização.
      */
     private void associarBiomasEClimas(ArvoreEntity arvore, Set<UUID> biomasIds, Set<UUID> climasIds) {
+        // Limpa associações antigas (necessário para o 'atualizar')
         if (arvore.getBiomasAssociados() != null) {
             arvore.getBiomasAssociados().clear();
+        } else {
+            arvore.setBiomasAssociados(new java.util.HashSet<>());
         }
+
         if (arvore.getClimasAssociados() != null) {
             arvore.getClimasAssociados().clear();
+        } else {
+            arvore.setClimasAssociados(new java.util.HashSet<>());
         }
 
+        // 1. Processa os Biomas
         Set<ArvoresBiomasEntity> biomasAssociados = biomasIds.stream()
                 .map(biomaId -> {
-                    // CORREÇÃO: Chama o novo método que retorna a Entity para uso no relacionamento
+                    // Busca a entidade Bioma
                     BiomaEntity bioma = biomaService.getEntityById(biomaId);
 
+                    // Cria a entidade de junção
                     ArvoresBiomasEntity arvoreBioma = new ArvoresBiomasEntity();
-                    // ...
+
+                    // Define o ID composto. O 'arvore.getId()' será nulo no 'criar',
+                    // mas será preenchido pelo @MapsId quando o 'arvore' for salvo.
+                    arvoreBioma.setId(new ArvoresBiomasId(arvore.getId(), biomaId));
+
+                    // Define os relacionamentos
+                    arvoreBioma.setArvore(arvore);
+                    arvoreBioma.setBioma(bioma);
+
                     return arvoreBioma;
                 })
                 .collect(Collectors.toSet());
 
+        // 2. Processa os Climas
         Set<ArvoresClimasEntity> climasAssociados = climasIds.stream()
                 .map(climaId -> {
-                    // CORREÇÃO: Chama o novo método que retorna a Entity para uso no relacionamento
+                    // Busca a entidade Clima
                     ClimaEntity clima = climaService.getEntityById(climaId);
 
+                    // Cria a entidade de junção
                     ArvoresClimasEntity arvoreClima = new ArvoresClimasEntity();
-                    // ...
+
+                    // Define o ID composto
+                    arvoreClima.setId(new ArvoresClimasId(arvore.getId(), climaId));
+
+                    // Define os relacionamentos
+                    arvoreClima.setArvore(arvore);
+                    arvoreClima.setClima(clima);
+
                     return arvoreClima;
                 })
                 .collect(Collectors.toSet());
 
-        arvore.setBiomasAssociados(biomasAssociados);
-        arvore.setClimasAssociados(climasAssociados);
+        // Define os novos conjuntos na entidade Arvore
+        arvore.getBiomasAssociados().addAll(biomasAssociados);
+        arvore.getClimasAssociados().addAll(climasAssociados);
     }
 }
