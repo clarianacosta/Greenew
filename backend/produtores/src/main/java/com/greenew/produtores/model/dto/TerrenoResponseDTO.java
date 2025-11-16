@@ -14,9 +14,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TerrenoResponseDTO {
     private UUID id;
-    private UUID produtorId;
+    // private UUID produtorId;
+    private ProdutorResumeDTO produtor;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private BigDecimal areaDisponivelHectares;
     private BiomaResponseDTO biomaLocal; // Objeto Bioma
     private ClimaResponseDTO climaLocal; // Objeto Clima
 //    private UUID biomaIdLocal;

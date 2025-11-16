@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenew.produtores.config.dtos.BiomaResponseDTO;
 import com.greenew.produtores.config.dtos.ClimaResponseDTO;
 import com.greenew.produtores.exception.RecursoNaoEncontradoException;
+import com.greenew.produtores.model.dto.ProdutorResumeDTO;
 import com.greenew.produtores.model.dto.TerrenoRequestDTO;
 import com.greenew.produtores.model.dto.TerrenoResponseDTO;
 import com.greenew.produtores.service.TerrenoService;
@@ -46,6 +47,8 @@ class TerrenoControllerTest {
     private UUID climaId;
     private BiomaResponseDTO biomaResponseDTO;
     private ClimaResponseDTO climaResponseDTO;
+    private ProdutorResumeDTO produtorResumeDTO;
+    private BigDecimal area;
 
     @BeforeEach
     void setUp() {
@@ -53,10 +56,12 @@ class TerrenoControllerTest {
         produtorId = UUID.randomUUID();
         biomaId = UUID.randomUUID();
         climaId = UUID.randomUUID();
+        area = new BigDecimal("100.0");
 
         // 1. Inicializa os objetos Bioma e Clima DTO (replicando a estrutura do Arvores-Service)
         biomaResponseDTO = new BiomaResponseDTO(biomaId, "Cerrado Teste", "Descrição Teste");
         climaResponseDTO = new ClimaResponseDTO(climaId, "Tropical Teste", "Descrição Teste");
+        produtorResumeDTO = new ProdutorResumeDTO(produtorId, "Produtor Teste", "produtor@teste.com", "11999999999");
 
         // 2. Inicializa Request DTO (usa IDs brutos, o que está correto)
         terrenoRequestDTO = new TerrenoRequestDTO();
@@ -65,14 +70,16 @@ class TerrenoControllerTest {
         terrenoRequestDTO.setBiomaIdLocal(biomaId);
         terrenoRequestDTO.setClimaIdLocal(climaId);
         terrenoRequestDTO.setProdutorId(produtorId);
+        terrenoRequestDTO.setAreaDisponivelHectares(area);
 
         // 3. Inicializa Response DTO com os objetos DTOs (corrigindo o erro de tipos)
         // A ordem do construtor deve ser: id, latitude, longitude, BiomaResponseDTO, ClimaResponseDTO, produtorId
         terrenoResponseDTO = new TerrenoResponseDTO(
                 terrenoId,
-                produtorId,
+                produtorResumeDTO,
                 new BigDecimal("-15.7801"),
                 new BigDecimal("-47.9292"),
+                area,
                 biomaResponseDTO,
                 climaResponseDTO
         );

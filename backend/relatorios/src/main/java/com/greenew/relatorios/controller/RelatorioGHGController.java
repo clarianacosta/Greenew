@@ -1,5 +1,7 @@
 package com.greenew.relatorios.controller;
 
+import com.greenew.relatorios.model.dto.RecomendacaoRanqueadaDTO;
+import com.greenew.relatorios.model.dto.RelatorioCalculadoDTO;
 import com.greenew.relatorios.model.dto.RelatorioGHGRequestDTO;
 import com.greenew.relatorios.model.dto.RelatorioGHGResponseDTO;
 import com.greenew.relatorios.service.RelatorioGHGService;
@@ -48,21 +50,58 @@ public class RelatorioGHGController {
         return ResponseEntity.ok(relatorios);
     }
 
+//    /**
+//     * Ação de finalizar um relatório: dispara o cálculo de emissões e a geração
+//     * da recomendação de compensação.
+//     *
+//     * @param relatorioId O ID do relatório a ser finalizado.
+//     * @param terrenoId O ID do terreno para basear a recomendação.
+//     * @param escopos Um JSON array (ex: [1, 2] ou [1, 2, 3]) com os escopos a incluir.
+//     */
+//    @PostMapping("/{relatorioId}/finalizar")
+//    public ResponseEntity<RelatorioGHGResponseDTO> finalizarRelatorio(
+//            @PathVariable UUID relatorioId,
+//            @RequestParam UUID terrenoId,
+//            @RequestBody Set<Integer> escopos) {
+//
+//        RelatorioGHGResponseDTO relatorioFinalizado = service.finalizarRelatorio(relatorioId, terrenoId, escopos);
+//        return ResponseEntity.ok(relatorioFinalizado);
+//    }
+
     /**
-     * Ação de finalizar um relatório: dispara o cálculo de emissões e a geração
-     * da recomendação de compensação.
-     *
-     * @param relatorioId O ID do relatório a ser finalizado.
-     * @param terrenoId O ID do terreno para basear a recomendação.
-     * @param escopos Um JSON array (ex: [1, 2] ou [1, 2, 3]) com os escopos a incluir.
+     * Etapa 1: Calcula o total de emissões do relatório.
      */
-    @PostMapping("/{relatorioId}/finalizar")
-    public ResponseEntity<RelatorioGHGResponseDTO> finalizarRelatorio(
+    @PostMapping("/{relatorioId}/calcular")
+    public ResponseEntity<RelatorioCalculadoDTO> calcularEmissoes(
             @PathVariable UUID relatorioId,
-            @RequestParam UUID terrenoId,
             @RequestBody Set<Integer> escopos) {
 
-        RelatorioGHGResponseDTO relatorioFinalizado = service.finalizarRelatorio(relatorioId, terrenoId, escopos);
-        return ResponseEntity.ok(relatorioFinalizado);
+        RelatorioCalculadoDTO relatorioCalculado = service.calcularEmissoesRelatorio(relatorioId, escopos);
+        return ResponseEntity.ok(relatorioCalculado);
+    }
+
+    /**
+     * Etapa 2: Busca o Top 3 de recomendações (árvores e terrenos)
+     * baseado no cálculo da Etapa 1.
+     */
+    @GetMapping("/{relatorioId}/recomendacoes")
+    public ResponseEntity<List<RecomendacaoRanqueadaDTO>> buscarRecomendacoes(
+            @PathVariable UUID relatorioId) {
+
+        List<RecomendacaoRanqueadaDTO> ranking = service.buscarRecomendacoes(relatorioId);
+        return ResponseEntity.ok(ranking);
+    }
+
+    /**
+     * Etapa 3: "Trava" a recomendação escolhida pelo usuário no relatório.
+     */
+    @PostMapping("/{relatorioId}/atribuir-recomendacao")
+    public ResponseEntity<RelatorioGHGResponseDTO> atribuirRecomendacao(
+            @PathVariable UUID relatorioId,
+            @RequestParam UUID terrenoId,
+            @RequestParam String nomeArvore) {
+
+        RelatorioGHGResponseDTO relatorioAtualizado = service.atribuirRecomendacao(relatorioId, terrenoId, nomeArvore);
+        return ResponseEntity.ok(relatorioAtualizado);
     }
 }

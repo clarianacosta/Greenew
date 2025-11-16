@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,5 +41,19 @@ public class ProdutoresServiceClient {
                         response -> Mono.error(new RecursoNaoEncontradoException("Terreno não encontrado no serviço de produtores com ID: " + terrenoId)))
                 .bodyToMono(TerrenoResponseDTO.class) // Converte para um único objeto
                 .block(); // Espera o objeto ser recebido
+    }
+
+    /**
+     * Busca a lista completa de terrenos disponíveis.
+     */
+    public List<TerrenoResponseDTO> buscarTodosTerrenos() {
+        String url = String.format("lb://%s/api/terrenos", produtoresServiceName);
+
+        return webClientBuilder.build().get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlux(TerrenoResponseDTO.class)
+                .collectList()
+                .block();
     }
 }

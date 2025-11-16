@@ -2,9 +2,7 @@ package com.greenew.relatorios.service.impl;
 
 import com.greenew.relatorios.config.client.EmpresasServiceClient;
 import com.greenew.relatorios.exception.RecursoNaoEncontradoException;
-import com.greenew.relatorios.model.dto.RecomendacaoCompensacaoDTO;
-import com.greenew.relatorios.model.dto.RelatorioGHGRequestDTO;
-import com.greenew.relatorios.model.dto.RelatorioGHGResponseDTO;
+import com.greenew.relatorios.model.dto.*;
 import com.greenew.relatorios.model.entity.NivelCompletude;
 import com.greenew.relatorios.model.entity.RelatorioGHGEntity;
 import com.greenew.relatorios.model.mapper.RelatorioGHGMapper;
@@ -47,24 +45,24 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
         return relatorioMapper.toResponseDTO(relatorioRepository.save(entity));
     }
 
-    @Override
-    public RelatorioGHGResponseDTO finalizarRelatorio(UUID relatorioId, UUID terrenoId, Set<Integer> escopos) {
-        RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
-
-        BigDecimal totalEmissoes = calculoService.calcularEmissoes(relatorio, escopos);
-        relatorio.setEmissaoCalculadaCo2e(totalEmissoes);
-        relatorio.setNivel(escopos.contains(3) ? NivelCompletude.COMPLETO : NivelCompletude.OPERACIONAL);
-
-        if (totalEmissoes.compareTo(BigDecimal.ZERO) > 0) {
-            RecomendacaoCompensacaoDTO recomendacao = recomendacaoService.gerarRecomendacao(totalEmissoes, terrenoId);
-            relatorio.setArvoreRecomendada(recomendacao.getArvoreRecomendada());
-            relatorio.setQuantidadeNecessaria(recomendacao.getQuantidadeNecessaria());
-            relatorio.setCustoTotalEstimado(recomendacao.getCustoTotalEstimado());
-        }
-
-        return relatorioMapper.toResponseDTO(relatorioRepository.save(relatorio));
-    }
+//    @Override
+//    public RelatorioGHGResponseDTO finalizarRelatorio(UUID relatorioId, UUID terrenoId, Set<Integer> escopos) {
+//        RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
+//                .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
+//
+//        BigDecimal totalEmissoes = calculoService.calcularEmissoes(relatorio, escopos);
+//        relatorio.setEmissaoCalculadaCo2e(totalEmissoes);
+//        relatorio.setNivel(escopos.contains(3) ? NivelCompletude.COMPLETO : NivelCompletude.OPERACIONAL);
+//
+//        if (totalEmissoes.compareTo(BigDecimal.ZERO) > 0) {
+//            RecomendacaoCompensacaoDTO recomendacao = recomendacaoService.gerarRecomendacao(totalEmissoes, terrenoId);
+//            relatorio.setArvoreRecomendada(recomendacao.getArvoreRecomendada());
+//            relatorio.setQuantidadeNecessaria(recomendacao.getQuantidadeNecessaria());
+//            relatorio.setCustoTotalEstimado(recomendacao.getCustoTotalEstimado());
+//        }
+//
+//        return relatorioMapper.toResponseDTO(relatorioRepository.save(relatorio));
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -92,5 +90,78 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
             throw new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId);
         }
         relatorioRepository.deleteById(relatorioId);
+    }
+
+    @Override
+    public RelatorioCalculadoDTO calcularEmissoesRelatorio(UUID relatorioId, Set<Integer> escopos) {
+        RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
+
+        BigDecimal totalEmissoes = calculoService.calcularEmissoes(relatorio, escopos);
+        relatorio.setEmissaoCalculadaCo2e(totalEmissoes);
+        relatorio.setNivel(escopos.contains(3) ? NivelCompletude.COMPLETO : NivelCompletude.OPERACIONAL);
+
+        // Limpa recomendações antigas se recalcular
+        relatorio.setArvoreRecomendada(null);
+        relatorio.setQuantidadeNecessaria(null);
+        relatorio.setCustoTotalEstimado(null);
+
+        RelatorioGHGEntity relatorioSalvo = relatorioRepository.save(relatorio);
+
+        // Retorna o DTO de cálculo
+        RelatorioCalculadoDTO dto = new RelatorioCalculadoDTO();
+        dto.setId(relatorioSalvo.getId());
+        dto.setAnoReferencia(relatorioSalvo.getAnoReferencia().getValue());
+        dto.setEmissaoCalculadaCo2e(relatorioSalvo.getEmissaoCalculadaCo2e());
+        dto.setNivel(relatorioSalvo.getNivel());
+        return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true) // Apenas leitura
+    public List<RecomendacaoRanqueadaDTO> buscarRecomendacoes(UUID relatorioId) {
+        RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
+
+        if (relatorio.getEmissaoCalculadaCo2e() == null || relatorio.getEmissaoCalculadaCo2e().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("As emissões devem ser calculadas (e ser maiores que zero) antes de buscar recomendações.");
+        }
+
+        return recomendacaoService.gerarRankingRecomendacoes(relatorio.getEmissaoCalculadaCo2e());
+    }
+
+    @Override
+    public RelatorioGHGResponseDTO atribuirRecomendacao(UUID relatorioId, UUID terrenoId, String nomeArvore) {
+        RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
+
+        if (relatorio.getEmissaoCalculadaCo2e() == null || relatorio.getEmissaoCalculadaCo2e().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("As emissões devem ser calculadas antes de atribuir uma recomendação.");
+        }
+
+        // Recalcula a recomendação específica escolhida para garantir os dados
+        // (Esta é uma simplificação; o ideal seria receber o DTO da recomendação escolhida)
+
+        List<RecomendacaoRanqueadaDTO> ranking = recomendacaoService.gerarRankingRecomendacoes(relatorio.getEmissaoCalculadaCo2e());
+
+        RecomendacaoRanqueadaDTO recomendacaoEscolhida = ranking.stream()
+                .filter(r -> r.getArvore().getNomePopular().equals(nomeArvore))
+                .findFirst()
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Recomendação com a árvore " + nomeArvore + " não é válida para este relatório."));
+
+        // Valida se o terreno escolhido está na lista de compatíveis
+        boolean terrenoValido = recomendacaoEscolhida.getTerrenosCompatíveis().stream()
+                .anyMatch(t -> t.getId().equals(terrenoId));
+
+        if (!terrenoValido) {
+            throw new IllegalArgumentException("O terreno selecionado não é compatível com a árvore e área necessárias.");
+        }
+
+        // Salva a recomendação no relatório
+        relatorio.setArvoreRecomendada(recomendacaoEscolhida.getArvore().getNomePopular());
+        relatorio.setQuantidadeNecessaria(recomendacaoEscolhida.getQuantidadeNecessaria());
+        relatorio.setCustoTotalEstimado(recomendacaoEscolhida.getCustoTotalEstimado());
+
+        return relatorioMapper.toResponseDTO(relatorioRepository.save(relatorio));
     }
 }

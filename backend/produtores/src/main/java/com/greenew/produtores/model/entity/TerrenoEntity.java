@@ -27,6 +27,9 @@ public class TerrenoEntity {
     @Column(name = "clima_id_local")
     private UUID climaIdLocal;
 
+    @Column(name = "area_disponivel_hectares", nullable = false)
+    private BigDecimal areaDisponivelHectares;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "produtor_id", nullable = false)
     private ProdutorEntity produtor;

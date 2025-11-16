@@ -21,6 +21,7 @@ class TerrenoMapperTest {
     private UUID produtorId;
     private UUID biomaId;
     private UUID climaId;
+    private BigDecimal area;
 
     @BeforeEach
     void setUp() {
@@ -29,6 +30,7 @@ class TerrenoMapperTest {
         produtorId = UUID.randomUUID();
         biomaId = UUID.randomUUID();
         climaId = UUID.randomUUID();
+        area = new BigDecimal("50.5");
     }
 
     @Test
@@ -37,6 +39,8 @@ class TerrenoMapperTest {
         // Cenário
         ProdutorEntity produtor = new ProdutorEntity();
         produtor.setId(produtorId);
+        produtor.setNomeCompleto("Produtor Teste");
+        produtor.setEmail("produtor@teste.com");
 
         TerrenoEntity entity = new TerrenoEntity();
         entity.setId(terrenoId);
@@ -45,6 +49,7 @@ class TerrenoMapperTest {
         entity.setLongitude(new BigDecimal("-47.92"));
         entity.setBiomaIdLocal(biomaId);
         entity.setClimaIdLocal(climaId);
+        entity.setAreaDisponivelHectares(area);
 
         // Ação
         TerrenoResponseDTO dto = terrenoMapper.toResponseDTO(entity);
@@ -53,7 +58,11 @@ class TerrenoMapperTest {
         assertThat(dto).isNotNull();
         assertThat(dto.getId()).isEqualTo(terrenoId);
         assertThat(dto.getLatitude()).isEqualTo(new BigDecimal("-15.78"));
-        assertThat(dto.getProdutorId()).isEqualTo(produtorId);
+        assertThat(dto.getAreaDisponivelHectares()).isEqualTo(area);
+
+        assertThat(dto.getProdutor()).isNotNull();
+        assertThat(dto.getProdutor().getId()).isEqualTo(produtorId);
+        assertThat(dto.getProdutor().getNomeCompleto()).isEqualTo("Produtor Teste");
     }
 
     @Test
@@ -72,6 +81,7 @@ class TerrenoMapperTest {
         dto.setLongitude(new BigDecimal("20.5"));
         dto.setBiomaIdLocal(biomaId);
         dto.setClimaIdLocal(climaId);
+        dto.setAreaDisponivelHectares(area);
         // ProdutorId não é mapeado aqui
 
         // Ação
@@ -81,6 +91,7 @@ class TerrenoMapperTest {
         assertThat(entity).isNotNull();
         assertThat(entity.getLatitude()).isEqualTo(new BigDecimal("10.5"));
         assertThat(entity.getBiomaIdLocal()).isEqualTo(biomaId);
+        assertThat(entity.getAreaDisponivelHectares()).isEqualTo(area);
         assertThat(entity.getProdutor()).isNull(); // Deve ser nulo, pois é settado no service
     }
 

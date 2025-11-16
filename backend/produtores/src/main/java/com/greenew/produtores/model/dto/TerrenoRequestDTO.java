@@ -26,6 +26,10 @@ public class TerrenoRequestDTO {
     @NotNull(message = "O ID do clima local é obrigatório.")
     private UUID climaIdLocal;
 
+    @NotNull(message = "A área disponível é obrigatória.")
+    @Positive(message = "A área deve ser um valor positivo.")
+    private BigDecimal areaDisponivelHectares;
+
     @NotNull(message = "O ID do produtor é obrigatório para a criação do terreno.")
     private UUID produtorId;
 }

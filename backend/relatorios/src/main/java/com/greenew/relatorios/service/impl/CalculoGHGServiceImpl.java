@@ -24,12 +24,11 @@ public class CalculoGHGServiceImpl implements CalculoGHGService {
 
     @Override
     public BigDecimal calcularEmissoes(RelatorioGHGEntity relatorio, Set<Integer> escopos) {
-        BigDecimal totalKgCo2e = relatorio.getAtividades().stream()
+
+        return relatorio.getAtividades().stream()
                 .filter(atividade -> escopos.contains(atividade.getEscopo()))
                 .map(this::calcularEmissaoIndividual)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return totalKgCo2e.divide(new BigDecimal("1000"), 4, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calcularEmissaoIndividual(AtividadeEmissoraEntity atividade) {

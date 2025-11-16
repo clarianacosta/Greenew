@@ -4,6 +4,7 @@ import com.greenew.produtores.config.client.ArvoresServiceClient;
 import com.greenew.produtores.config.dtos.BiomaResponseDTO;
 import com.greenew.produtores.config.dtos.ClimaResponseDTO;
 import com.greenew.produtores.exception.RecursoNaoEncontradoException;
+import com.greenew.produtores.model.dto.ProdutorResumeDTO;
 import com.greenew.produtores.model.dto.TerrenoRequestDTO;
 import com.greenew.produtores.model.dto.TerrenoResponseDTO;
 import com.greenew.produtores.model.entity.ProdutorEntity;
@@ -57,6 +58,8 @@ class TerrenoServiceImplTest {
     private UUID climaId;
     private BiomaResponseDTO biomaResponseDTO;
     private ClimaResponseDTO climaResponseDTO;
+    private ProdutorResumeDTO produtorResumeDTO; // NOVO
+    private BigDecimal area;
 
     @BeforeEach
     void setUp() {
@@ -64,20 +67,25 @@ class TerrenoServiceImplTest {
         terrenoId = UUID.randomUUID();
         biomaId = UUID.randomUUID();
         climaId = UUID.randomUUID();
+        area = new BigDecimal("10.0");
 
         // 1. Inicialização de DTOs de Serviço (para retorno do Mock)
         biomaResponseDTO = new BiomaResponseDTO(biomaId, "Cerrado Mock", "Descrição Mock");
         climaResponseDTO = new ClimaResponseDTO(climaId, "Tropical Mock", "Descrição Mock");
+        produtorResumeDTO = new ProdutorResumeDTO(produtorId, "Produtor Teste", "email@teste.com", null);
 
         // 2. Inicialização de Entidades
         produtorEntity = new ProdutorEntity();
         produtorEntity.setId(produtorId);
+        produtorEntity.setNomeCompleto("Produtor Teste");
+        produtorEntity.setEmail("email@teste.com");
 
         terrenoEntity = new TerrenoEntity();
         terrenoEntity.setId(terrenoId);
         terrenoEntity.setLatitude(new BigDecimal("10.0"));
         terrenoEntity.setBiomaIdLocal(biomaId);
         terrenoEntity.setClimaIdLocal(climaId);
+        terrenoEntity.setAreaDisponivelHectares(area);
         terrenoEntity.setProdutor(produtorEntity);
 
         // 3. Inicialização de DTOs de Request/Response
@@ -86,13 +94,15 @@ class TerrenoServiceImplTest {
         terrenoRequestDTO.setProdutorId(produtorId);
         terrenoRequestDTO.setBiomaIdLocal(biomaId);
         terrenoRequestDTO.setClimaIdLocal(climaId);
+        terrenoRequestDTO.setAreaDisponivelHectares(area);
 
         // O response DTO (com detalhes aninhados)
         terrenoResponseDTO = new TerrenoResponseDTO(
                 terrenoId,
-                produtorId,
+                produtorResumeDTO,
                 new BigDecimal("10.0"),
-                new BigDecimal("20.0"), // Valor padrão não crítico para este teste
+                new BigDecimal("20.0"), // Longitude (valor de teste)
+                area,
                 biomaResponseDTO,
                 climaResponseDTO
         );
@@ -117,14 +127,14 @@ class TerrenoServiceImplTest {
         // Mock o mapper para retornar a versão final (antes de anexar Bioma/Clima)
         // Usamos doAnswer para simular a lógica de anexo de DTOs no ServiceImpl
         when(terrenoMapper.toResponseDTO(terrenoEntity)).thenReturn(
-                new TerrenoResponseDTO(terrenoId, produtorId, new BigDecimal("10.0"), new BigDecimal("20.0"), null, null)
+                new TerrenoResponseDTO(terrenoId, produtorResumeDTO, new BigDecimal("10.0"), new BigDecimal("20.0"), area, null, null)
         );
 
         TerrenoResponseDTO resultado = terrenoService.criar(terrenoRequestDTO);
 
         assertThat(resultado.getBiomaLocal()).isEqualTo(biomaResponseDTO);
         assertThat(resultado.getClimaLocal()).isEqualTo(climaResponseDTO);
-        assertThat(terrenoEntity.getProdutor().getId()).isEqualTo(produtorId);
+        assertThat(resultado.getProdutor().getId()).isEqualTo(produtorId);
         verify(terrenoRepository).save(terrenoEntity);
         verify(arvoresServiceClient).buscarBiomaPorId(biomaId);
         verify(arvoresServiceClient).buscarClimaPorId(climaId);
