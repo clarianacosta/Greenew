@@ -1,0 +1,353 @@
+<div class="min-h-screen bg-base-200/30 font-quicksand">
+  <app-empresa-navbar></app-empresa-navbar>
+
+  <div class="max-w-7xl mx-auto p-8">
+    <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-primary mb-2">Visão Geral</h1>
+        <p class="text-gray-500">Acompanhe a jornada de descarbonização da sua empresa.</p>
+      </div>
+      <a
+        routerLink="/empresa/novo-relatorio"
+        class="btn btn-primary text-white shadow-lg gap-2 hover:scale-105 transition-transform"
+      >
+        <span class="material-symbols-rounded">add</span> Novo Relatório
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div
+        class="stat bg-white rounded-2xl shadow-sm border border-base-200 transition-all hover:shadow-md"
+      >
+        <div class="stat-figure text-error bg-error/10 p-3 rounded-full">
+          <span class="material-symbols-rounded text-3xl">cloud_off</span>
+        </div>
+        <div class="stat-title font-bold text-gray-500">Emissões Totais</div>
+        <div class="stat-value text-error text-3xl mt-1">
+          {{ totalEmitido$ | async | number : '1.2-2' }}
+          <span class="text-sm font-normal text-gray-400">tCO₂e</span>
+        </div>
+        <div class="stat-desc">Acumulado histórico</div>
+      </div>
+
+      <div
+        class="stat bg-white rounded-2xl shadow-sm border border-base-200 transition-all hover:shadow-md"
+      >
+        <div class="stat-figure text-success bg-success/10 p-3 rounded-full">
+          <span class="material-symbols-rounded text-3xl">forest</span>
+        </div>
+        <div class="stat-title font-bold text-gray-500">Total Compensado</div>
+        <div class="stat-value text-success text-3xl mt-1">
+          {{ totalCompensado$ | async | number : '1.2-2' }}
+          <span class="text-sm font-normal text-gray-400">tCO₂e</span>
+        </div>
+        <div class="stat-desc text-success font-semibold">
+          {{ (totalCompensado$ | async) ? 'Árvores plantadas!' : 'Inicie sua compensação' }}
+        </div>
+      </div>
+
+      <div
+        class="stat bg-gradient-to-br from-primary to-primary-focus text-primary-content rounded-2xl shadow-lg"
+      >
+        <div class="stat-figure text-primary-content/40">
+          <span class="material-symbols-rounded text-5xl">eco</span>
+        </div>
+        <div class="stat-title text-primary-content/80 font-bold uppercase text-xs">
+          Balanço Líquido
+        </div>
+        <div class="stat-value text-2xl mt-1">
+          {{ (totalEmitido$ | async)! - (totalCompensado$ | async)! | number : '1.2-2' }}
+          <span class="text-sm">tCO₂e</span>
+        </div>
+        <div class="stat-desc text-primary-content/70">Restante para neutralizar</div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border border-base-300 overflow-hidden">
+      <div class="p-6 border-b border-base-200 flex justify-between items-center bg-base-100">
+        <h2 class="text-xl font-bold flex items-center gap-2 text-gray-700">
+          <span class="material-symbols-rounded text-gray-400">folder_open</span> Histórico de
+          Relatórios
+        </h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead class="bg-base-200/50 text-gray-500 font-bold uppercase text-xs">
+            <tr>
+              <th class="pl-6">Ano Base</th>
+              <th>Emissão (tCO₂e)</th>
+              <th>Status</th>
+              <th>Compensação</th>
+              <th class="text-right pr-6">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let relatorio of relatorios$ | async"
+              class="hover:bg-base-50 transition-colors"
+            >
+              <td class="pl-6 h-full">
+                <div class="flex items-center h-full">
+                  <div class="font-bold text-lg text-primary">{{ relatorio.anoReferencia }}</div>
+                </div>
+              </td>
+
+              <td>
+                <div class="flex items-center gap-1 font-mono font-bold text-gray-700">
+                  {{ relatorio.emissaoCalculadaCo2e | number : '1.2-2' }}
+                </div>
+              </td>
+              <td>
+                <span
+                  class="badge font-bold border-none gap-1"
+                  [ngClass]="getStatusClass(relatorio.nivel, !!relatorio.arvoreRecomendada)"
+                >
+                  {{ getStatusLabel(relatorio.nivel, !!relatorio.arvoreRecomendada) }}
+                </span>
+              </td>
+              <td>
+                <div
+                  *ngIf="relatorio.arvoreRecomendada"
+                  class="flex items-center gap-2 text-sm text-success font-semibold"
+                >
+                  <span class="material-symbols-rounded text-lg">check_circle</span>
+                  {{ relatorio.arvoreRecomendada }}
+                </div>
+                <div *ngIf="!relatorio.arvoreRecomendada" class="text-xs text-gray-400 italic">
+                  Pendente
+                </div>
+              </td>
+              <td class="text-right pr-6 flex justify-end gap-2">
+                <button
+                  (click)="abrirDetalhes(relatorio)"
+                  class="btn btn-ghost btn-sm btn-circle tooltip"
+                  data-tip="Ver Detalhes"
+                >
+                  <span *ngIf="!loadingDetalhes" class="material-symbols-rounded text-gray-500"
+                    >visibility</span
+                  >
+                  <span *ngIf="loadingDetalhes" class="loading loading-spinner loading-xs"></span>
+                </button>
+                <button
+                  *ngIf="!relatorio.arvoreRecomendada"
+                  (click)="continuarRelatorio(relatorio.id)"
+                  class="btn btn-ghost btn-sm btn-circle text-primary tooltip"
+                  data-tip="Continuar Edição"
+                >
+                  <span class="material-symbols-rounded">edit</span>
+                </button>
+                <button
+                  (click)="deletarRelatorio(relatorio.id)"
+                  class="btn btn-ghost btn-sm btn-circle text-error tooltip"
+                  data-tip="Excluir"
+                >
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="(relatorios$ | async)?.length === 0">
+              <td colspan="5" class="text-center py-16 text-gray-400">
+                <div class="flex flex-col items-center gap-3">
+                  <div
+                    class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mb-2"
+                  >
+                    <span class="material-symbols-rounded text-4xl opacity-40">post_add</span>
+                  </div>
+                  <p class="font-medium">Você ainda não possui relatórios.</p>
+                  <a routerLink="/empresa/novo-relatorio" class="btn btn-outline btn-primary btn-sm"
+                    >Criar Primeiro Relatório</a
+                  >
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="modal_detalhes" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div
+    class="modal-box w-11/12 max-w-4xl border border-base-300 shadow-2xl"
+    *ngIf="relatorioSelecionado"
+  >
+    <div class="flex justify-between items-start mb-6">
+      <h3 class="font-bold text-lg flex items-center gap-2">
+        <span class="material-symbols-rounded text-primary">description</span>
+        Detalhes do Relatório
+      </h3>
+      <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost">✕</button></form>
+    </div>
+
+    <div class="flex flex-col gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="stats shadow w-full bg-base-100 border border-base-200">
+          <div class="stat place-items-center">
+            <div class="stat-title">Ano Base</div>
+            <div class="stat-value text-primary">{{ relatorioSelecionado.anoReferencia }}</div>
+          </div>
+          <div class="stat place-items-center">
+            <div class="stat-title">Emissões Totais</div>
+            <div class="stat-value">
+              {{ relatorioSelecionado.emissaoCalculadaCo2e | number : '1.2-2' }}
+            </div>
+            <div class="stat-desc">tCO₂e</div>
+          </div>
+        </div>
+
+        <div
+          class="bg-success/5 p-5 rounded-xl border border-success/20 h-full flex flex-col justify-center"
+          *ngIf="relatorioSelecionado.arvoreRecomendada"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <span
+              class="text-xs font-bold text-success uppercase tracking-wide flex items-center gap-1"
+            >
+              <span class="material-symbols-rounded text-sm">verified</span> Compensação Ativa
+            </span>
+            <div class="badge badge-neutral font-mono">
+              {{ relatorioSelecionado.quantidadeNecessaria }} mudas
+            </div>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="bg-white p-2 rounded-lg shadow-sm text-success">
+              <span class="material-symbols-rounded text-2xl">forest</span>
+            </div>
+            <span class="font-bold text-xl text-gray-800">{{
+              relatorioSelecionado.arvoreRecomendada
+            }}</span>
+          </div>
+          <div class="flex justify-between text-sm border-t border-success/20 pt-2">
+            <span class="text-gray-600">Investimento Total</span>
+            <span class="font-black text-success text-lg">
+              R$ {{ relatorioSelecionado.custoTotalEstimado | number : '1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="alert alert-warning shadow-sm flex items-center h-full"
+          *ngIf="!relatorioSelecionado.arvoreRecomendada"
+        >
+          <span class="material-symbols-rounded text-2xl">warning</span>
+          <span>Este relatório ainda não possui compensação definida.</span>
+        </div>
+      </div>
+
+      <div
+        *ngIf="
+          relatorioSelecionado.terrenosCompativeis &&
+          relatorioSelecionado.terrenosCompativeis.length > 0
+        "
+      >
+        <h4
+          class="font-bold text-sm text-gray-500 uppercase mb-4 flex items-center gap-2 pb-2 border-b border-base-200"
+        >
+          <span class="material-symbols-rounded text-base">location_on</span> Territórios Vinculados
+        </h4>
+
+        <div class="flex flex-col gap-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+          <div
+            *ngFor="let terreno of relatorioSelecionado.terrenosCompativeis"
+            class="p-4 bg-base-50 border border-base-200 rounded-xl hover:bg-white hover:shadow-md transition-all"
+          >
+            <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+              <div class="flex flex-col gap-1">
+                <div class="font-bold text-lg text-gray-800">
+                  {{ terreno.produtor.nomeCompleto }}
+                </div>
+
+                <div class="flex flex-wrap gap-2 mt-1">
+                  <span
+                    *ngIf="terreno.produtor.email"
+                    class="badge badge-sm badge-ghost gap-1 font-normal py-3 h-auto"
+                  >
+                    <span class="material-symbols-rounded text-xs">mail</span>
+                    {{ terreno.produtor.email }}
+                  </span>
+                  <span
+                    *ngIf="terreno.produtor.celular"
+                    class="badge badge-sm badge-ghost gap-1 font-normal py-3 h-auto"
+                  >
+                    <span class="material-symbols-rounded text-xs">call</span>
+                    {{ terreno.produtor.celular }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col items-end gap-2 min-w-[180px]">
+                <div class="flex items-center gap-2">
+                  <span class="badge badge-outline font-bold"
+                    >{{ terreno.areaDisponivelHectares }} ha</span
+                  >
+                  <div class="flex gap-1">
+                    <span class="badge badge-success badge-xs text-white border-none">{{
+                      terreno.biomaLocal.nome
+                    }}</span>
+                    <span class="badge badge-info badge-xs text-white border-none">{{
+                      terreno.climaLocal.nome
+                    }}</span>
+                  </div>
+                </div>
+
+                <div class="text-xs text-gray-400 font-mono">
+                  Lat: {{ terreno.latitude | number : '1.3-3' }} • Lon:
+                  {{ terreno.longitude | number : '1.3-3' }}
+                </div>
+
+                <button
+                  class="btn btn-xs btn-warning btn-outline gap-1 mt-1"
+                  (click)="abrirMapa(terreno)"
+                >
+                  <span class="material-symbols-rounded text-sm">map</span> Ver no Mapa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<dialog id="modal_mapa_dashboard" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div
+    class="modal-box border border-base-300 shadow-2xl w-11/12 max-w-5xl h-[80vh] p-0 overflow-hidden relative bg-base-100"
+  >
+    <div
+      class="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none"
+    >
+      <div
+        class="bg-base-100/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg border border-base-200 pointer-events-auto"
+      >
+        <h3 class="font-bold text-lg flex items-center gap-2 text-primary">
+          <span class="material-symbols-rounded">location_on</span> Localização do Terreno
+        </h3>
+      </div>
+      <form method="dialog" class="pointer-events-auto">
+        <button class="btn btn-circle btn-sm btn-neutral shadow-lg border-white/20">
+          <span class="material-symbols-rounded text-xs">close</span>
+        </button>
+      </form>
+    </div>
+    <div class="w-full h-full bg-gray-100 flex justify-center items-center">
+      <iframe
+        *ngIf="urlMapaSegura"
+        [src]="urlMapaSegura"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        style="border: 0"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+      <div *ngIf="!urlMapaSegura" class="flex flex-col items-center gap-2 text-gray-400">
+        <span class="loading loading-spinner loading-lg"></span><span>Carregando mapa...</span>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>

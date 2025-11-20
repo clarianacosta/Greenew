@@ -58,10 +58,10 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
     private static final double MAX_AREA_ESPERADA_M2 = 350.0;
 
     // Pesos que definem a importância de cada categoria no ranking final.
-    private static final double PESO_ABSORCAO = 0.40;   // 40%
-    private static final double PESO_CUSTO = 0.30;      // 30%
-    private static final double PESO_TEMPO = 0.20;      // 20%
-    private static final double PESO_ESPACO = 0.10;     // 10%
+    private static final double PESO_ABSORCAO = 0.32;   // 32%
+    private static final double PESO_CUSTO = 0.36;      // 36%
+    private static final double PESO_TEMPO = 0.08;      // 8%
+    private static final double PESO_ESPACO = 0.24;     // 24%
 
     public RecomendacaoServiceImpl(ArvoresServiceClient aClient, ProdutoresServiceClient pClient) {
         this.arvoresServiceClient = aClient;
@@ -82,7 +82,7 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
         // 2. Mapeia cada árvore para uma recomendação potencial
         List<RecomendacaoRanqueadaDTO> recomendacoes = todasAsArvores.stream()
                 .map(arvore -> criarRecomendacaoParaArvore(arvore, totalEmissoesCO2e, todosOsTerrenos))
-                .filter(recomendacao -> !recomendacao.getTerrenosCompatíveis().isEmpty())
+                .filter(recomendacao -> !recomendacao.getTerrenosCompativeis().isEmpty())
                 .sorted(Comparator.comparing(RecomendacaoRanqueadaDTO::getPontuacao).reversed()) // Ordena pela pontuação
                 .limit(3) // Pega o Top 3
                 .collect(Collectors.toList());
@@ -122,7 +122,7 @@ public class RecomendacaoServiceImpl implements RecomendacaoService {
         dto.setQuantidadeNecessaria(quantidadeNecessaria);
         dto.setCustoTotalEstimado(custoTotal);
         dto.setAreaTotalNecessariaHectares(areaTotalNecessariaHectares.doubleValue());
-        dto.setTerrenosCompatíveis(terrenosCompativeis);
+        dto.setTerrenosCompativeis(terrenosCompativeis);
 
         return dto;
     }

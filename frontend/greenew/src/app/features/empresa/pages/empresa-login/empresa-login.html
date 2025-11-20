@@ -1,0 +1,67 @@
+<div class="min-h-screen bg-base-200 flex items-center justify-center p-4 font-quicksand">
+  <div class="card w-full max-w-md bg-base-100 shadow-2xl">
+    <div class="card-body items-center text-center">
+
+      <div class="mb-6 w-24 h-24">
+        <app-logo-simple></app-logo-simple>
+      </div>
+
+      <h2 class="card-title text-2xl mb-2 text-primary">Área da Empresa</h2>
+      <p class="text-gray-500 text-sm mb-6">Gerencie suas emissões e compensações.</p>
+
+      <div class="tabs tabs-boxed bg-base-200 mb-6 w-full">
+        <a class="tab w-1/2" [class.tab-active]="modo === 'LOGIN'" (click)="alternarModo('LOGIN')">Já sou Cliente</a>
+        <a class="tab w-1/2" [class.tab-active]="modo === 'CADASTRO'" (click)="alternarModo('CADASTRO')">Nova Conta</a>
+      </div>
+
+      <div *ngIf="modo === 'LOGIN'" class="w-full flex flex-col gap-4 animate-fade-in">
+        <div class="form-control w-full">
+          <label class="label"><span class="label-text">Selecione sua Empresa</span></label>
+          <select [(ngModel)]="empresaSelecionadaId" class="select select-bordered w-full">
+            <option value="" disabled selected>Escolha na lista...</option>
+            <option *ngFor="let e of empresas$ | async" [value]="e.id">
+              {{ e.razaoSocial }} ({{ e.cnpj }})
+            </option>
+          </select>
+        </div>
+        <button class="btn btn-primary w-full mt-2" [disabled]="!empresaSelecionadaId" (click)="entrar()">
+          Acessar Painel
+        </button>
+      </div>
+
+      <div *ngIf="modo === 'CADASTRO'" class="w-full flex flex-col gap-4 animate-fade-in">
+        <div class="form-control">
+            <input
+                type="text"
+                [(ngModel)]="novaEmpresa.razaoSocial"
+                placeholder="Razão Social"
+                class="input input-bordered w-full"
+            />
+        </div>
+
+        <div class="form-control">
+            <input
+                type="text"
+                [ngModel]="novaEmpresa.cnpj"
+                (ngModelChange)="formatarCNPJ($event)"
+                (keydown)="bloquearTeclasNaoNumericas($event)"
+                placeholder="CNPJ (00.000.000/0000-00)"
+                class="input input-bordered w-full font-mono"
+                maxlength="18"
+            />
+            <label class="label pb-0 pt-1" *ngIf="novaEmpresa.cnpj && novaEmpresa.cnpj.length < 18">
+                <span class="label-text-alt text-warning">CNPJ incompleto</span>
+            </label>
+        </div>
+
+        <button
+            class="btn btn-primary w-full mt-2"
+            [disabled]="!novaEmpresa.razaoSocial || novaEmpresa.cnpj.length < 18"
+            (click)="cadastrar()">
+          Criar Conta e Entrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

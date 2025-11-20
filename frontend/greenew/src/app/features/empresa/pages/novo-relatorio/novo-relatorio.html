@@ -1,0 +1,198 @@
+<div class="min-h-screen bg-base-200/30 font-quicksand pb-20">
+  <app-empresa-navbar></app-empresa-navbar>
+
+  <div class="max-w-5xl mx-auto p-8">
+
+    <ul class="steps w-full mb-12">
+      <li class="step" [class.step-primary]="passoAtual >= 1">Início</li>
+      <li class="step" [class.step-primary]="passoAtual >= 2">Inventário</li>
+      <li class="step" [class.step-primary]="passoAtual >= 3">Resultado</li>
+      <li class="step" [class.step-primary]="passoAtual >= 4">Compensação</li>
+    </ul>
+
+    <div *ngIf="passoAtual === 1" class="card bg-white shadow-xl animate-fade-in max-w-lg mx-auto">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">Novo Relatório</h2>
+        <p class="text-gray-500 mb-6">Selecione o ano base para o inventário de emissões.</p>
+        <div class="form-control w-full">
+          <label class="label font-bold">Ano de Referência</label>
+          <input type="number" [(ngModel)]="anoReferencia" class="input input-bordered text-lg w-full" min="2000" max="2030" />
+        </div>
+        <div class="card-actions justify-end mt-6">
+          <button class="btn btn-primary text-white w-full" (click)="iniciarRelatorio()" [disabled]="loading">
+            <span *ngIf="loading" class="loading loading-spinner"></span> Iniciar Inventário
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="passoAtual === 2" class="card bg-white shadow-xl animate-fade-in">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h2 class="card-title text-2xl">Lançamento de Atividades</h2>
+            <p class="text-gray-500 text-sm">Adicione as fontes de emissão.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" (click)="voltar()">Voltar</button>
+        </div>
+
+        <div class="overflow-x-auto bg-base-100 rounded-lg border border-base-300 p-4 mb-6">
+          <table class="table w-full">
+            <thead>
+              <tr>
+                <th class="w-1/2">Fonte de Emissão</th>
+                <th class="w-1/4">Quantidade</th>
+                <th class="w-1/6">Unidade</th>
+                <th class="w-12"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of itensInventario; let i = index">
+                <td>
+                  <select [(ngModel)]="item.fatorEmissaoId" (change)="aoSelecionarFator(item)" class="select select-bordered w-full select-sm">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option *ngFor="let f of listaFatores" [value]="f.id">{{ f.nomeAtividade }} (Escopo {{ f.escopo }})</option>
+                  </select>
+                </td>
+                <td><input type="number" [(ngModel)]="item.quantidade" class="input input-bordered w-full input-sm" placeholder="0.00" min="0" /></td>
+                <td><span class="badge badge-ghost font-mono" *ngIf="item.unidade">{{ item.unidade }}</span><span class="text-gray-300 text-xs" *ngIf="!item.unidade">---</span></td>
+                <td class="text-right">
+                  <button class="btn btn-ghost btn-xs text-error" (click)="removerLinha(i)" *ngIf="itensInventario.length > 1">
+                    <span class="material-symbols-rounded">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-ghost btn-sm text-primary gap-2 mt-4 w-full border-dashed border-2 border-base-300" (click)="adicionarLinha()">
+            <span class="material-symbols-rounded">add</span> Adicionar nova linha
+          </button>
+        </div>
+
+        <div class="card-actions justify-end border-t pt-4">
+          <button class="btn btn-primary text-white px-8" (click)="salvarInventarioECalcular()" [disabled]="!formularioInventarioValido || loading">
+            <span *ngIf="loading" class="loading loading-spinner"></span> Salvar e Calcular <span class="material-symbols-rounded">calculate</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="passoAtual === 3" class="card bg-white shadow-xl animate-fade-in text-center max-w-2xl mx-auto">
+      <div class="card-body items-center py-12">
+        <div class="bg-error/10 p-6 rounded-full mb-4"><span class="material-symbols-rounded text-6xl text-error">cloud_upload</span></div>
+        <h2 class="text-2xl font-bold text-gray-700">Emissão Total Calculada</h2>
+        <div class="text-6xl font-black text-primary my-6">
+          {{ resultadoCalculo?.emissaoCalculadaCo2e | number:'1.2-2' }} <span class="text-xl font-medium text-gray-400">tCO₂e</span>
+        </div>
+        <div class="flex gap-4 w-full justify-center">
+          <button class="btn btn-outline" (click)="voltar()">Revisar Dados</button>
+          <button class="btn btn-primary text-white gap-2" (click)="irParaCompensacao()">Ver Planos de Compensação <span class="material-symbols-rounded">forest</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="passoAtual === 4" class="animate-fade-in">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Escolha seu plano de compensação</h2>
+        <button class="btn btn-ghost btn-sm" (click)="voltar()">Voltar</button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 mb-10">
+        <div *ngFor="let rec of recomendacoes$ | async; let i = index"
+             class="card bg-white shadow-lg border-2 transition-all cursor-pointer hover:scale-[1.01]"
+             [class.border-primary]="recomendacaoEscolhidaId === rec.arvore.id"
+             [class.border-transparent]="recomendacaoEscolhidaId !== rec.arvore.id"
+             (click)="selecionarRecomendacao(rec.arvore.id)">
+
+          <div class="card-body p-6">
+            <div class="flex flex-row items-center gap-6">
+              <div class="flex flex-col items-center justify-center w-16 h-16 bg-base-200 rounded-full font-bold text-xl text-primary shrink-0">#{{ i + 1 }}</div>
+              <div class="flex-1">
+                <h3 class="card-title text-xl flex items-center gap-2">
+                  {{ rec.arvore.nomePopular }}
+                  <span *ngIf="i === 0" class="badge badge-primary badge-outline text-xs">Recomendado</span>
+                </h3>
+                <p class="text-sm text-gray-500 italic">{{ rec.arvore.nomeCientifico }}</p>
+                <div class="flex gap-3 mt-2">
+                  <div class="badge badge-ghost gap-1"><span class="font-bold">{{ rec.quantidadeNecessaria }}</span> mudas</div>
+                  <div class="badge badge-ghost gap-1"><span class="font-bold">{{ rec.areaTotalNecessariaHectares | number:'1.2-2' }}</span> ha</div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-xs text-gray-400 uppercase font-bold">Sequestro/Muda</div>
+                <div class="text-2xl font-black text-success">
+                  {{ rec.arvore.taxaAbsorcaoCo2Anual | number:'1.2-2' }} <span class="text-sm font-medium text-gray-400">kg/ano</span>
+                </div>
+              </div>
+              <div class="form-control shrink-0">
+                <input type="radio" name="radio-compensacao" class="radio radio-primary radio-lg" [checked]="recomendacaoEscolhidaId === rec.arvore.id" />
+              </div>
+            </div>
+
+            <div class="flex justify-center mt-2 -mb-2">
+              <button class="btn btn-xs btn-ghost text-gray-400 hover:text-primary gap-1" (click)="toggleExpand($event, rec.arvore.id)">
+                {{ expandedRecomendacaoId === rec.arvore.id ? 'Ocultar Detalhes' : 'Ver Detalhes Completos' }}
+                <span class="material-symbols-rounded text-base">{{ expandedRecomendacaoId === rec.arvore.id ? 'expand_less' : 'expand_more' }}</span>
+              </button>
+            </div>
+
+            <div *ngIf="expandedRecomendacaoId === rec.arvore.id" class="mt-6 pt-6 border-t border-base-200 animate-fade-in">
+              <div class="flex flex-col gap-8">
+                <div class="flex flex-col gap-3">
+                  <h4 class="font-bold text-sm uppercase text-gray-500 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">info</span> Ficha Técnica & Financeira
+                  </h4>
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div class="bg-base-100 p-3 rounded border border-base-200"><div class="text-gray-500 text-xs">Maturidade</div><div class="font-bold">{{ rec.arvore.tempoMaturidadeAnos }} anos</div></div>
+                    <div class="bg-base-100 p-3 rounded border border-base-200"><div class="text-gray-500 text-xs">Altura Média</div><div class="font-bold">{{ rec.arvore.alturaMediaM }} m</div></div>
+                    <div class="bg-base-100 p-3 rounded border border-base-200"><div class="text-gray-500 text-xs">Diâmetro Copa</div><div class="font-bold">{{ rec.arvore.diametroCopaMedioM }} m</div></div>
+                    <div class="bg-base-100 p-3 rounded border border-base-200"><div class="text-gray-500 text-xs">Custo Unitário</div><div class="font-bold">R$ {{ rec.arvore.custoMedioMuda | number:'1.2-2' }}</div></div>
+                  </div>
+                  <div class="alert alert-success/10 border-success/20 flex justify-between items-center mt-1 py-3">
+                    <span class="font-bold text-success-content flex items-center gap-2"><span class="material-symbols-rounded">payments</span> Investimento Total Estimado</span>
+                    <span class="text-2xl font-black text-success">R$ {{ rec.custoTotalEstimado | number:'1.2-2' }}</span>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                  <h4 class="font-bold text-sm uppercase text-gray-500 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-base">location_on</span> Terrenos Disponíveis ({{ rec.terrenosCompativeis.length }})
+                  </h4>
+                  <div class="grid grid-cols-1 gap-3">
+                    <div *ngFor="let terreno of rec.terrenosCompativeis" class="p-4 rounded-lg border border-base-200 bg-base-50 hover:bg-white hover:shadow-md transition-all">
+                      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                          <div class="flex items-center gap-3">
+                            <div>
+                              <div class="font-bold text-base text-gray-800">{{ terreno.produtor.nomeCompleto }}</div>
+                              <div class="flex flex-wrap gap-3 mt-1">
+                                <span *ngIf="terreno.produtor.email" class="badge badge-sm badge-ghost gap-1 h-auto py-1"><span class="material-symbols-rounded text-[14px]">mail</span> {{ terreno.produtor.email }}</span>
+                                <span *ngIf="terreno.produtor.celular" class="badge badge-sm badge-ghost gap-1 h-auto py-1"><span class="material-symbols-rounded text-[14px]">call</span> {{ terreno.produtor.celular }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1 min-w-[150px]">
+                          <div class="badge badge-lg badge-outline font-mono bg-white font-bold">{{ terreno.areaDisponivelHectares }} ha disponíveis</div>
+                          <div class="text-xs text-gray-400 font-mono flex items-center gap-1">Lat: {{ terreno.latitude | number:'1.2-2' }} | Lon: {{ terreno.longitude | number:'1.2-2' }}</div>
+                          <div class="flex gap-1 mt-1"><span class="badge badge-xs badge-success badge-outline">{{ terreno.biomaLocal.nome }}</span><span class="badge badge-xs badge-info badge-outline">{{ terreno.climaLocal.nome }}</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <button class="btn btn-primary btn-lg text-white shadow-xl w-full max-w-md" [disabled]="!recomendacaoEscolhidaId || loading" (click)="finalizar()">
+          <span *ngIf="loading" class="loading loading-spinner"></span> Confirmar Compensação
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

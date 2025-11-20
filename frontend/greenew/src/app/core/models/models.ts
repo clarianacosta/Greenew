@@ -1,7 +1,4 @@
-// ==========================================
-// 1. ÁRVORES, BIOMAS E CLIMAS
-// ==========================================
-
+// Árvores, Biomas e Climas
 export interface Bioma {
   id: string;
   nome: string;
@@ -39,10 +36,7 @@ export interface ArvoreResponse {
   climas: Clima[];
 }
 
-// ==========================================
-// 2. PRODUTORES E TERRENOS
-// ==========================================
-
+// Produtores e Terrenos
 export interface ProdutorRequest {
   nomeCompleto: string;
   email: string;
@@ -52,6 +46,8 @@ export interface ProdutorRequest {
 export interface ProdutorResume {
   id: string;
   nomeCompleto: string;
+  email?: string;
+  celular?: string;
 }
 
 export interface ProdutorResponse {
@@ -59,7 +55,7 @@ export interface ProdutorResponse {
   nomeCompleto: string;
   email: string;
   celular?: string;
-  terrenos?: TerrenoResponse[]; // Lista de terrenos do produtor
+  terrenos?: TerrenoResponse[];
 }
 
 export interface TerrenoRequest {
@@ -73,18 +69,15 @@ export interface TerrenoRequest {
 
 export interface TerrenoResponse {
   id: string;
-  produtor: ProdutorResume; // Objeto aninhado
+  produtor: ProdutorResume;
   latitude: number;
   longitude: number;
   areaDisponivelHectares: number;
-  biomaLocal: Bioma; // Objeto completo retornado pelo backend
-  climaLocal: Clima; // Objeto completo retornado pelo backend
+  biomaLocal: Bioma;
+  climaLocal: Clima;
 }
 
-// ==========================================
-// 3. EMPRESAS
-// ==========================================
-
+// Empresas
 export interface EmpresaRequest {
   razaoSocial: string;
   cnpj: string;
@@ -96,9 +89,30 @@ export interface EmpresaResponse {
   cnpj: string;
 }
 
-// ==========================================
-// 4. RELATÓRIOS E CÁLCULOS (GHG)
-// ==========================================
+// Relatórios e Cálculos
+export interface FatorEmissao {
+  id: string;
+  nomeAtividade: string;
+  unidade: string;
+  escopo: number;
+  fonte: string;
+  fatorCo2: number;
+  fatorCh4: number;
+  fatorN2o: number;
+}
+
+export interface AtividadeRequest {
+  fatorEmissaoId: string;
+  quantidade: number;
+}
+
+export interface AtividadeResponse {
+  id: string;
+  nome: string;
+  escopo: number;
+  unidade: string;
+  quantidade: number;
+}
 
 export type NivelCompletude = 'COMPLETO' | 'OPERACIONAL';
 
@@ -119,9 +133,8 @@ export interface RelatorioResponse {
   anoReferencia: number;
   emissaoCalculadaCo2e: number;
   nivel: NivelCompletude;
-
-  // Campos de recomendação que vêm nulos antes de finalizar, mas preenchidos depois
-  arvoreRecomendada?: string; // Nome da árvore (String no Java)
+  atividades?: AtividadeResponse[];
+  arvoreRecomendada?: string;
   quantidadeNecessaria?: number;
   custoTotalEstimado?: number;
   terrenosCompativeis?: TerrenoResponse[];

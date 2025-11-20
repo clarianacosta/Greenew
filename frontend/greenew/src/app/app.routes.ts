@@ -5,30 +5,14 @@ import { AdminEmpresas } from './features/admin/pages/admin-empresas/admin-empre
 import { AdminArvores } from './features/admin/pages/admin-arvores/admin-arvores';
 import { AdminProdutores } from './features/admin/pages/admin-produtores/admin-produtores';
 import { AdminTerrenos } from './features/admin/pages/admin-terrenos/admin-terrenos';
-
-// Importe seus componentes aqui (você precisará criá-los)
-// import { AdminDashboardComponent } ...
-// import { CompanySelectionComponent } ...
-// import { ReportListComponent } ...
-// import { ReportWizardComponent } ...
+import { EmpresaDashboard } from './features/empresa/pages/empresa-dashboard/empresa-dashboard';
+import { EmpresaLogin } from './features/empresa/pages/empresa-login/empresa-login';
+import { NovoRelatorio } from './features/empresa/pages/novo-relatorio/novo-relatorio';
+import { AdminFatores } from './features/admin/pages/admin-fatores/admin-fatores';
 
 export const routes: Routes = [
-  // Rota Pública
   { path: '', component: LandingPage },
 
-  // "Login" Simulado
-  // { path: 'acesso', component: CompanySelectionComponent }, // Componente para escolher a empresa
-
-  // Área do Cliente (Fluxo Principal)
-  {
-    path: 'app',
-    children: [
-      // { path: 'relatorios', component: ReportListComponent },       // Lista relatórios da empresa
-      // { path: 'relatorios/:id', component: ReportWizardComponent }  // O "Coração" do sistema (Passos 1 a 4)
-    ]
-  },
-
-  // Área Administrativa (Cadastros Base)
   {
     path: 'admin',
     children: [
@@ -36,7 +20,31 @@ export const routes: Routes = [
       { path: 'empresas', component: AdminEmpresas },
       { path: 'arvores', component: AdminArvores },
       { path: 'produtores', component: AdminProdutores },
-      { path: 'terrenos', component: AdminTerrenos }
+      { path: 'terrenos', component: AdminTerrenos },
+      { path: 'fatores', component: AdminFatores }
+    ]
+  },
+
+  {
+    path: 'empresa',
+    children: [
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
+      },
+      {
+        path: 'login',
+        component: EmpresaLogin
+      },
+      {
+        path: 'dashboard',
+        component: EmpresaDashboard
+      },
+      {
+        path: 'novo-relatorio',
+        component: NovoRelatorio
+      }
     ]
   },
 

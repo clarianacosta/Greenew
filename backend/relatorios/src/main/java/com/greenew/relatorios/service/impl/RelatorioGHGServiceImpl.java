@@ -10,6 +10,7 @@ import com.greenew.relatorios.model.dto.*;
 import com.greenew.relatorios.model.entity.NivelCompletude;
 import com.greenew.relatorios.model.entity.RelatorioGHGEntity;
 import com.greenew.relatorios.model.mapper.RelatorioGHGMapper;
+import com.greenew.relatorios.repository.AtividadeEmissoraRepository;
 import com.greenew.relatorios.repository.RelatorioGHGRepository;
 import com.greenew.relatorios.service.CalculoGHGService;
 import com.greenew.relatorios.service.RecomendacaoService;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class RelatorioGHGServiceImpl implements RelatorioGHGService {
 
+    private final AtividadeEmissoraRepository atividadeRepository;
     private final RelatorioGHGRepository relatorioRepository;
     private final RelatorioGHGMapper relatorioMapper;
     private final CalculoGHGService calculoService;
@@ -36,7 +38,8 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
     private final ArvoresServiceClient arvoresServiceClient;
     private final ProdutoresServiceClient produtoresServiceClient;
 
-    public RelatorioGHGServiceImpl(RelatorioGHGRepository rRepo, RelatorioGHGMapper rMapper, CalculoGHGService cService, RecomendacaoService recService, EmpresasServiceClient eClient, ArvoresServiceClient arvoresServiceClient, ProdutoresServiceClient produtoresServiceClient) {
+    public RelatorioGHGServiceImpl(RelatorioGHGRepository repository, AtividadeEmissoraRepository atividadeRepository, RelatorioGHGRepository rRepo, RelatorioGHGMapper rMapper, CalculoGHGService cService, RecomendacaoService recService, EmpresasServiceClient eClient, ArvoresServiceClient arvoresServiceClient, ProdutoresServiceClient produtoresServiceClient) {
+        this.atividadeRepository = atividadeRepository;
         this.relatorioRepository = rRepo;
         this.relatorioMapper = rMapper;
         this.calculoService = cService;
@@ -125,14 +128,6 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
     }
 
     @Override
-    public void deletarRelatorio(UUID relatorioId) {
-        if (!relatorioRepository.existsById(relatorioId)) {
-            throw new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId);
-        }
-        relatorioRepository.deleteById(relatorioId);
-    }
-
-    @Override
     public RelatorioCalculadoDTO calcularEmissoesRelatorio(UUID relatorioId, Set<Integer> escopos) {
         RelatorioGHGEntity relatorio = relatorioRepository.findById(relatorioId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Relatório não encontrado: " + relatorioId));
@@ -206,5 +201,20 @@ public class RelatorioGHGServiceImpl implements RelatorioGHGService {
 
         // 6. Salva e retorna
         return relatorioMapper.toResponseDTO(relatorioRepository.save(relatorio));
+    }
+
+    @Override
+    @Transactional
+    public void deletarRelatorio(UUID id) {
+        if (!relatorioRepository.existsById(id)) {
+            throw new RecursoNaoEncontradoException("Relatório não encontrado para exclusão.");
+        }
+
+        var atividades = atividadeRepository.findAll().stream()
+                .filter(a -> a.getRelatorio().getId().equals(id))
+                .collect(Collectors.toList());
+        atividadeRepository.deleteAll(atividades);
+
+        relatorioRepository.deleteById(id);
     }
 }

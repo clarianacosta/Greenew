@@ -1,0 +1,150 @@
+<div class="min-h-screen bg-base-200/50 font-quicksand">
+  <app-admin-navbar></app-admin-navbar>
+
+  <div class="p-8">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <a routerLink="/admin" class="btn btn-ghost btn-sm gap-2 pl-0 mb-2 text-gray-500">
+            <span class="material-symbols-rounded">arrow_back</span> Voltar ao Painel
+          </a>
+          <h1 class="text-3xl font-bold text-primary">Fatores de Emissão</h1>
+        </div>
+        <button (click)="abrirModal()" class="btn btn-primary text-white shadow-lg hover:scale-105 transition-transform">
+          <span class="material-symbols-rounded">add</span> Novo Fator
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border border-base-300">
+        <table class="table w-full text-sm">
+          <thead class="bg-base-100 text-base-content uppercase text-xs">
+            <tr>
+              <th>Atividade / Fonte</th>
+              <th>Escopo</th>
+              <th>Unidade</th>
+              <th>Fatores (kg/uni)</th>
+              <th class="text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let fator of fatores$ | async" class="hover transition-colors">
+
+              <td>
+                <div class="font-bold text-base">{{ fator.nomeAtividade }}</div>
+                <div class="text-xs text-gray-400 italic">{{ fator.fonte }}</div>
+              </td>
+
+              <td>
+                <span class="badge font-bold"
+                  [ngClass]="{'badge-error': fator.escopo === 1, 'badge-warning': fator.escopo === 2, 'badge-info': fator.escopo === 3}">
+                  Escopo {{ fator.escopo }}
+                </span>
+              </td>
+
+              <td>
+                <code class="bg-base-200 px-2 py-1 rounded text-xs">{{ fator.unidade }}</code>
+              </td>
+
+              <td>
+                <div class="flex flex-col gap-1 text-xs">
+                  <span class="font-mono">CO₂: {{ fator.fatorCo2 }}</span>
+                  <span class="font-mono text-gray-500">CH₄: {{ fator.fatorCh4 }}</span>
+                  <span class="font-mono text-gray-500">N₂O: {{ fator.fatorN2o }}</span>
+                </div>
+              </td>
+
+              <td class="text-right">
+                <button (click)="deletarFator(fator.id)" class="btn btn-ghost btn-circle btn-sm text-error tooltip" data-tip="Excluir">
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="(fatores$ | async)?.length === 0">
+                <td colspan="5" class="text-center py-12 text-gray-400">
+                  <div class="flex flex-col items-center gap-2">
+                    <span class="material-symbols-rounded text-4xl opacity-30">science_off</span>
+                    <p>Nenhum fator de emissão cadastrado.</p>
+                  </div>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="modal_fator" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div class="modal-box border border-base-300 shadow-2xl">
+    <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-primary">
+      <span class="material-symbols-rounded">science</span> Cadastrar Fator de Emissão
+    </h3>
+
+    <form method="dialog" class="flex flex-col gap-4">
+
+      <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold">Nome da Atividade</span>
+        </label>
+        <input type="text" [(ngModel)]="novoFator.nomeAtividade" name="nome" placeholder="Ex: Diesel B10" class="input input-bordered w-full" />
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-bold">Fonte de Dados</span>
+        </label>
+        <input type="text" [(ngModel)]="novoFator.fonte" name="fonte" placeholder="Ex: IPCC 2024" class="input input-bordered w-full" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text font-bold">Escopo</span>
+            </label>
+            <select [(ngModel)]="novoFator.escopo" name="escopo" class="select select-bordered w-full">
+                <option [ngValue]="1">Escopo 1</option>
+                <option [ngValue]="2">Escopo 2</option>
+                <option [ngValue]="3">Escopo 3</option>
+            </select>
+        </div>
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text font-bold">Unidade</span>
+            </label>
+            <input type="text" [(ngModel)]="novoFator.unidade" name="unidade" placeholder="Ex: litros" class="input input-bordered w-full" />
+        </div>
+      </div>
+
+      <div class="divider text-xs text-gray-400 mt-4 mb-0">FATORES (kg de gás por unidade)</div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text text-xs font-bold">Fator CO₂</span>
+            </label>
+            <input type="number" [(ngModel)]="novoFator.fatorCo2" name="co2" class="input input-bordered input-sm w-full" step="0.0001" />
+        </div>
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text text-xs font-bold">Fator CH₄</span>
+            </label>
+            <input type="number" [(ngModel)]="novoFator.fatorCh4" name="ch4" class="input input-bordered input-sm w-full" step="0.0001" />
+        </div>
+        <div class="form-control w-full">
+            <label class="label">
+                <span class="label-text text-xs font-bold">Fator N₂O</span>
+            </label>
+            <input type="number" [(ngModel)]="novoFator.fatorN2o" name="n2o" class="input input-bordered input-sm w-full" step="0.0001" />
+        </div>
+      </div>
+
+      <div class="modal-action mt-6">
+        <button class="btn btn-ghost">Cancelar</button>
+        <button type="button" (click)="salvarFator()" class="btn btn-primary text-white">Salvar</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>

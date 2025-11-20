@@ -103,4 +103,10 @@ public class RelatorioGHGController {
         RelatorioGHGResponseDTO relatorioAtualizado = service.atribuirRecomendacao(relatorioId, arvoreId);
         return ResponseEntity.ok(relatorioAtualizado);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarRelatorio(@PathVariable UUID id) {
+        service.deletarRelatorio(id);
+        return ResponseEntity.noContent().build();
+    }
 }

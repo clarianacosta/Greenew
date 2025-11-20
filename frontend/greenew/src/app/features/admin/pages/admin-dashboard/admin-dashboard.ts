@@ -8,9 +8,10 @@ import { EmpresaService } from '../../../../core/services/empresa.service';
 import { ProdutorService } from '../../../../core/services/produtor.service';
 import { TerrenoService } from '../../../../core/services/terreno.service';
 import { ArvoreService } from '../../../../core/services/arvore.service';
+import { RelatorioService } from '../../../../core/services/relatorio.service';
 
 interface ItemRecente {
-  tipo: 'Empresa' | 'Produtor' | 'Terreno' | 'Árvore';
+  tipo: 'Empresa' | 'Produtor' | 'Terreno' | 'Árvore' | 'Fator';
   nome: string;
   detalhe: string;
   icone: string;
@@ -18,10 +19,6 @@ interface ItemRecente {
   link: string;
 }
 
-/**
- * Dashboard administrativo do sistema Greenew
- * Exibe resumo das atividades recentes e estatísticas principais
- */
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -29,14 +26,13 @@ interface ItemRecente {
   templateUrl: './admin-dashboard.html',
 })
 export class AdminDashboard implements OnInit {
-  /** Serviços injetados */
   private empresaService = inject(EmpresaService);
   private produtorService = inject(ProdutorService);
   private terrenoService = inject(TerrenoService);
   private arvoreService = inject(ArvoreService);
+  private fatoresService = inject(RelatorioService);
   private cdr = inject(ChangeDetectorRef);
 
-  /** Estado da interface */
   atividadesRecentes: ItemRecente[] = [];
   loading = true;
 
@@ -44,9 +40,6 @@ export class AdminDashboard implements OnInit {
     this.carregarDadosDashboard();
   }
 
-  /**
-   * Carrega dados de todos os serviços e monta lista de atividades recentes
-   */
   private carregarDadosDashboard(): void {
     this.loading = true;
 
@@ -55,10 +48,25 @@ export class AdminDashboard implements OnInit {
       arvores: this.arvoreService.listarTodas().pipe(catchError(() => of([]))),
       produtores: this.produtorService.listarTodos().pipe(catchError(() => of([]))),
       empresas: this.empresaService.listarTodas().pipe(catchError(() => of([]))),
+      fatores: this.fatoresService.listarFatoresEmissao().pipe(catchError(() => of([]))),
     })
       .pipe(
         map((dados) => {
           const lista: ItemRecente[] = [];
+
+          // Adiciona terrenos recentes
+          if (dados.fatores) {
+            dados.fatores.slice(-2).forEach((t) => {
+              lista.push({
+                tipo: 'Fator',
+                nome: `${t.nomeAtividade}`,
+                detalhe: `${t.unidade} | Escopo ${t.escopo}`,
+                icone: 'science',
+                classeIcone: 'text-gray-500 bg-gray-100',
+                link: '/admin/fatores',
+              });
+            });
+          }
 
           // Adiciona terrenos recentes
           if (dados.terrenos) {
@@ -116,7 +124,7 @@ export class AdminDashboard implements OnInit {
             });
           }
 
-          return lista.reverse().slice(0, 8);
+          return lista.reverse().slice(0, 10);
         })
       )
       .subscribe({

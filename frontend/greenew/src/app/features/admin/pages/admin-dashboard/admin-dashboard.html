@@ -1,13 +1,14 @@
 <div class="min-h-screen bg-base-200/50 flex flex-col font-quicksand">
   <app-admin-navbar></app-admin-navbar>
   <div class="flex-1 p-10 max-w-7xl mx-auto w-full">
-
     <h1 class="text-4xl font-bold text-primary mb-2">Painel Administrativo</h1>
     <p class="text-gray-600 mb-10">Gerencie os dados mestres da plataforma Greenew.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-
-      <a routerLink="/admin/empresas" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
+      <a
+        routerLink="/admin/empresas"
+        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300"
+      >
         <div class="card-body items-center text-center p-6">
           <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
             <span class="material-symbols-rounded text-primary text-3xl">corporate_fare</span>
@@ -17,7 +18,10 @@
         </div>
       </a>
 
-      <a routerLink="/admin/arvores" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+      <a
+        routerLink="/admin/arvores"
+        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300"
+      >
         <div class="card-body items-center text-center p-6">
           <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
             <span class="material-symbols-rounded text-primary text-3xl">forest</span>
@@ -27,7 +31,10 @@
         </div>
       </a>
 
-      <a routerLink="/admin/produtores" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+      <a
+        routerLink="/admin/produtores"
+        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300"
+      >
         <div class="card-body items-center text-center p-6">
           <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
             <span class="material-symbols-rounded text-primary text-3xl">agriculture</span>
@@ -37,13 +44,29 @@
         </div>
       </a>
 
-      <a routerLink="/admin/terrenos" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+      <a
+        routerLink="/admin/terrenos"
+        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300"
+      >
         <div class="card-body items-center text-center p-6">
           <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
             <span class="material-symbols-rounded text-primary text-3xl">add_location</span>
           </div>
           <h2 class="card-title text-lg">Terrenos</h2>
           <p class="text-xs text-gray-500">Áreas disponíveis</p>
+        </div>
+      </a>
+
+      <a
+        routerLink="/admin/fatores"
+        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300"
+      >
+        <div class="card-body items-center text-center p-6">
+          <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
+            <span class="material-symbols-rounded text-primary text-3xl">science</span>
+          </div>
+          <h2 class="card-title text-lg">Fatores de Emissão</h2>
+          <p class="text-xs text-gray-500">Gerencie os fatores.</p>
         </div>
       </a>
     </div>
@@ -80,10 +103,17 @@
               </td>
             </tr>
 
-            <tr *ngFor="let item of atividadesRecentes" class="hover:bg-base-200/30 transition-colors group">
+            <tr
+              *ngFor="let item of atividadesRecentes"
+              class="hover:bg-base-200/30 transition-colors group"
+            >
               <td class="pl-6">
                 <div class="flex items-center gap-3">
-                  <div [class]="'w-10 h-10 rounded-full flex items-center justify-center ' + item.classeIcone">
+                  <div
+                    [class]="
+                      'w-10 h-10 rounded-full flex items-center justify-center ' + item.classeIcone
+                    "
+                  >
                     <span class="material-symbols-rounded text-xl">{{ item.icone }}</span>
                   </div>
                   <span class="font-bold text-sm">{{ item.tipo }}</span>
@@ -99,7 +129,10 @@
               </td>
 
               <td class="text-right pr-6">
-                <a [routerLink]="item.link" class="btn btn-ghost btn-sm btn-circle text-gray-400 group-hover:text-primary">
+                <a
+                  [routerLink]="item.link"
+                  class="btn btn-ghost btn-sm btn-circle text-gray-400 group-hover:text-primary"
+                >
                   <span class="material-symbols-rounded">arrow_forward</span>
                 </a>
               </td>
@@ -108,6 +141,5 @@
         </table>
       </div>
     </div>
-
   </div>
 </div>

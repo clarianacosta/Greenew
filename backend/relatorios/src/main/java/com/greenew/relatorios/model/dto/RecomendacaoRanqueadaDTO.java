@@ -14,5 +14,5 @@ public class RecomendacaoRanqueadaDTO {
     private BigDecimal custoTotalEstimado;
     private double pontuacao; // A pontuação final usada para ordenar
     private double areaTotalNecessariaHectares;
-    private List<TerrenoResponseDTO> terrenosCompatíveis;
+    private List<TerrenoResponseDTO> terrenosCompativeis;
 }
