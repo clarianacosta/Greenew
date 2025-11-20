@@ -1,0 +1,113 @@
+<div class="min-h-screen bg-base-200/50 flex flex-col font-quicksand">
+  <app-admin-navbar></app-admin-navbar>
+  <div class="flex-1 p-10 max-w-7xl mx-auto w-full">
+
+    <h1 class="text-4xl font-bold text-primary mb-2">Painel Administrativo</h1>
+    <p class="text-gray-600 mb-10">Gerencie os dados mestres da plataforma Greenew.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+      <a routerLink="/admin/empresas" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+        <div class="card-body items-center text-center p-6">
+          <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
+            <span class="material-symbols-rounded text-primary text-3xl">corporate_fare</span>
+          </div>
+          <h2 class="card-title text-lg">Empresas</h2>
+          <p class="text-xs text-gray-500">Gerencie clientes e CNPJs</p>
+        </div>
+      </a>
+
+      <a routerLink="/admin/arvores" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+        <div class="card-body items-center text-center p-6">
+          <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
+            <span class="material-symbols-rounded text-primary text-3xl">forest</span>
+          </div>
+          <h2 class="card-title text-lg">Árvores</h2>
+          <p class="text-xs text-gray-500">Catálogo de espécies</p>
+        </div>
+      </a>
+
+      <a routerLink="/admin/produtores" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+        <div class="card-body items-center text-center p-6">
+          <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
+            <span class="material-symbols-rounded text-primary text-3xl">agriculture</span>
+          </div>
+          <h2 class="card-title text-lg">Produtores</h2>
+          <p class="text-xs text-gray-500">Gerencie parceiros</p>
+        </div>
+      </a>
+
+      <a routerLink="/admin/terrenos" class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer border border-base-300">
+        <div class="card-body items-center text-center p-6">
+          <div class="bg-primary/10 w-14 h-14 flex items-center justify-center rounded-full mb-2">
+            <span class="material-symbols-rounded text-primary text-3xl">add_location</span>
+          </div>
+          <h2 class="card-title text-lg">Terrenos</h2>
+          <p class="text-xs text-gray-500">Áreas disponíveis</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="bg-base-100 rounded-2xl shadow-lg border border-base-300 overflow-hidden">
+      <div class="p-6 border-b border-base-200 flex justify-between items-center">
+        <h3 class="text-xl font-bold flex items-center gap-2">
+          <span class="material-symbols-rounded text-gray-400">history</span>
+          Registros Recentes
+        </h3>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead class="bg-base-200/50 text-gray-500 font-bold uppercase text-xs">
+            <tr>
+              <th class="pl-6">Tipo</th>
+              <th>Identificação</th>
+              <th>Detalhe</th>
+              <th class="text-right pr-6">Ação</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="4" class="text-center py-8 text-gray-400">
+                <span class="loading loading-dots loading-md"></span> Carregando atividades...
+              </td>
+            </tr>
+
+            <tr *ngIf="!loading && atividadesRecentes.length === 0">
+              <td colspan="4" class="text-center py-8 text-gray-400">
+                Nenhuma atividade recente encontrada.
+              </td>
+            </tr>
+
+            <tr *ngFor="let item of atividadesRecentes" class="hover:bg-base-200/30 transition-colors group">
+              <td class="pl-6">
+                <div class="flex items-center gap-3">
+                  <div [class]="'w-10 h-10 rounded-full flex items-center justify-center ' + item.classeIcone">
+                    <span class="material-symbols-rounded text-xl">{{ item.icone }}</span>
+                  </div>
+                  <span class="font-bold text-sm">{{ item.tipo }}</span>
+                </div>
+              </td>
+
+              <td class="font-medium text-base-content">
+                {{ item.nome }}
+              </td>
+
+              <td class="text-gray-500 text-sm font-mono">
+                {{ item.detalhe }}
+              </td>
+
+              <td class="text-right pr-6">
+                <a [routerLink]="item.link" class="btn btn-ghost btn-sm btn-circle text-gray-400 group-hover:text-primary">
+                  <span class="material-symbols-rounded">arrow_forward</span>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

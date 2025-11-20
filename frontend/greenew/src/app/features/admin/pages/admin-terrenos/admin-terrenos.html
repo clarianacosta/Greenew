@@ -1,0 +1,320 @@
+<div class="min-h-screen bg-base-200/50 font-quicksand">
+  <app-admin-navbar></app-admin-navbar>
+
+  <div class="p-8">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="flex flex-col gap-4 mb-8">
+
+        <div class="flex justify-between items-end">
+
+        <div>
+          <a routerLink="/admin" class="btn btn-ghost btn-sm gap-2 pl-0 mb-2 text-gray-500">
+            <span class="material-symbols-rounded">arrow_back</span> Voltar ao Painel
+          </a>
+          <h1 class="text-3xl font-bold text-primary">Gestão de Terrenos</h1>
+        </div>
+
+          <button
+            (click)="abrirModalCadastro()"
+            class="btn btn-primary text-white shadow-lg hover:scale-105 transition-transform"
+          >
+            <span class="material-symbols-rounded">add_location_alt</span> Novo Terreno
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="filtroProdutorId"
+        class="alert alert-info shadow-md mb-6 flex justify-between items-center animate-fade-in-down"
+      >
+        <div class="flex items-center gap-3 text-white">
+          <span class="material-symbols-rounded text-3xl">filter_alt</span>
+          <div>
+            <h3 class="font-bold text-sm uppercase opacity-80">Filtro Ativo</h3>
+            <div class="text-lg">
+              Exibindo terrenos de: <strong>{{ produtorFiltradoNome }}</strong>
+            </div>
+          </div>
+        </div>
+        <button
+          (click)="limparFiltro()"
+          class="btn btn-sm btn-ghost text-white hover:bg-white/20 gap-2"
+        >
+          Ver Todos
+          <span class="material-symbols-rounded text-sm">close</span>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border border-base-300">
+        <table class="table w-full">
+          <thead class="bg-base-100 text-base-content uppercase text-sm">
+            <tr>
+              <th>Localização / Dono</th>
+              <th>Dimensões</th>
+              <th>Dados Ambientais</th>
+              <th class="text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let terreno of terrenos$ | async" class="hover transition-colors">
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar placeholder">
+                    <span
+                      class="flex justify-center items-center w-10 h-10 rounded-full bg-slate-800 text-white text-xs font-bold"
+                    >
+                      {{ obterIniciais(terreno.produtor.nomeCompleto) }}
+                    </span>
+                  </div>
+                  <div>
+                    <div class="font-bold">
+                      <a
+                        [routerLink]="['/admin/produtores']"
+                        [queryParams]="{ busca: terreno.produtor.nomeCompleto }"
+                        class="link link-hover hover:text-primary transition-colors"
+                        title="Ver cadastro deste produtor"
+                      >
+                        {{ terreno.produtor.nomeCompleto }}
+                      </a>
+                    </div>
+                    <div class="text-xs text-gray-500 font-mono flex flex-col">
+                      <span>Lat: {{ terreno.latitude | number : '1.5-5' }}</span>
+                      <span>Lon: {{ terreno.longitude | number : '1.5-5' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div class="badge badge-lg badge-outline gap-1 font-mono font-bold">
+                  {{ terreno.areaDisponivelHectares }} ha
+                </div>
+              </td>
+
+              <td>
+                <div class="flex flex-col gap-2 items-start">
+                  <span class="badge badge-success badge-outline badge-xs bg-success/5">
+                    {{ terreno.biomaLocal.nome }}
+                  </span>
+                  <span class="badge badge-info badge-outline badge-xs bg-info/5">
+                    {{ terreno.climaLocal.nome }}
+                  </span>
+                </div>
+              </td>
+
+              <td class="text-right">
+                <button
+                  *ngIf="terreno.latitude && terreno.longitude"
+                  (click)="abrirMapa(terreno)"
+                  class="btn btn-ghost btn-circle btn-sm text-warning tooltip"
+                  data-tip="Ver no Mapa"
+                >
+                  <span class="material-symbols-rounded">map</span>
+                </button>
+
+                <button
+                  (click)="prepararEdicao(terreno)"
+                  class="btn btn-ghost btn-circle btn-sm text-info tooltip"
+                  data-tip="Editar"
+                >
+                  <span class="material-symbols-rounded">edit</span>
+                </button>
+                <button
+                  (click)="deletarTerreno(terreno.id)"
+                  class="btn btn-ghost btn-circle btn-sm text-error tooltip"
+                  data-tip="Excluir"
+                >
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="(terrenos$ | async)?.length === 0">
+              <td colspan="4" class="text-center py-16 text-gray-400">
+                <div class="flex flex-col items-center gap-2">
+                  <span class="material-symbols-rounded text-5xl opacity-30">wrong_location</span>
+                  <p class="font-semibold text-lg">Nenhum terreno encontrado.</p>
+                  <p class="text-sm" *ngIf="filtroProdutorId">
+                    Este produtor ainda não possui áreas cadastradas.
+                    <button (click)="abrirModalCadastro()" class="link link-primary">
+                      Cadastrar agora?
+                    </button>
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="modal_terreno" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div class="modal-box border border-base-300 shadow-2xl w-11/12 max-w-3xl">
+    <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-primary">
+      <span class="material-symbols-rounded">{{
+        terrenoEmEdicaoId ? 'edit_location' : 'add_location_alt'
+      }}</span>
+      {{ terrenoEmEdicaoId ? 'Editar Terreno' : 'Cadastrar Novo Terreno' }}
+    </h3>
+
+    <form method="dialog" class="flex flex-col gap-5">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Proprietário (Produtor)</span>
+        </label>
+        <select
+          [(ngModel)]="novoTerreno.produtorId"
+          name="produtorId"
+          class="select select-bordered w-full focus:select-primary"
+          [disabled]="!!filtroProdutorId && !terrenoEmEdicaoId"
+        >
+          <option value="" disabled selected>Selecione um produtor...</option>
+          <option *ngFor="let p of produtores$ | async" [value]="p.id">
+            {{ p.nomeCompleto }} ({{ p.email }})
+          </option>
+        </select>
+        <label class="label pb-0 pt-1" *ngIf="filtroProdutorId && !terrenoEmEdicaoId">
+          <span class="label-text-alt text-info">Produtor pré-selecionado pelo filtro.</span>
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Latitude</span></label>
+          <input
+            type="number"
+            [(ngModel)]="novoTerreno.latitude"
+            name="latitude"
+            placeholder="-23.5505"
+            step="any"
+            class="input input-bordered w-full focus:input-primary font-mono"
+            (keydown)="bloquearTeclasNaoNumericas($event)"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Longitude</span></label>
+          <input
+            type="number"
+            [(ngModel)]="novoTerreno.longitude"
+            name="longitude"
+            placeholder="-46.6333"
+            step="any"
+            class="input input-bordered w-full focus:input-primary font-mono"
+            (keydown)="bloquearTeclasNaoNumericas($event)"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Área (Hectares)</span></label>
+          <input
+            type="number"
+            [(ngModel)]="novoTerreno.areaDisponivelHectares"
+            name="area"
+            placeholder="0.00"
+            min="0.1"
+            step="0.1"
+            class="input input-bordered w-full focus:input-primary"
+            (keydown)="bloquearTeclasNaoNumericas($event)"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Bioma Local</span></label>
+          <select
+            [(ngModel)]="novoTerreno.biomaIdLocal"
+            name="bioma"
+            class="select select-bordered w-full focus:select-primary"
+          >
+            <option value="" disabled selected>Selecione...</option>
+            <option *ngFor="let b of biomas$ | async" [value]="b.id">{{ b.nome }}</option>
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text font-semibold">Clima Local</span></label>
+          <select
+            [(ngModel)]="novoTerreno.climaIdLocal"
+            name="clima"
+            class="select select-bordered w-full focus:select-primary"
+          >
+            <option value="" disabled selected>Selecione...</option>
+            <option *ngFor="let c of climas$ | async" [value]="c.id">{{ c.nome }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div
+        class="alert alert-warning text-sm py-2 mt-2"
+        *ngIf="!formularioValido && novoTerreno.produtorId"
+      >
+        <span class="material-symbols-rounded">warning</span>
+        <span>Preencha todos os campos: Coordenadas, Área, Bioma e Clima.</span>
+      </div>
+
+      <div class="modal-action mt-6 border-t pt-4">
+        <button class="btn btn-ghost hover:bg-base-200">Cancelar</button>
+        <button
+          type="button"
+          (click)="salvarTerreno()"
+          class="btn btn-primary text-white shadow-md gap-2"
+          [disabled]="!formularioValido"
+        >
+          <span class="material-symbols-rounded text-sm">check</span>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<dialog id="modal_mapa" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div class="modal-box border border-base-300 shadow-2xl w-11/12 max-w-5xl h-[80vh] p-0 overflow-hidden relative bg-base-100">
+
+    <div class="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
+      <div class="bg-base-100/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg border border-base-200 pointer-events-auto">
+        <h3 class="font-bold text-lg flex items-center gap-2 text-primary">
+          <span class="material-symbols-rounded">location_on</span>
+          Localização do Terreno
+        </h3>
+        <p class="text-xs text-gray-500">Visualização via Satélite/Mapa</p>
+      </div>
+
+      <form method="dialog" class="pointer-events-auto">
+        <button class="btn btn-circle btn-sm btn-neutral shadow-lg border-white/20">
+          <span class="material-symbols-rounded text-xs">close</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="w-full h-full bg-gray-100 flex justify-center items-center">
+      <iframe
+        *ngIf="urlMapaSegura"
+        [src]="urlMapaSegura"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        style="border:0"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+
+      <div *ngIf="!urlMapaSegura" class="flex flex-col items-center gap-2 text-gray-400">
+        <span class="loading loading-spinner loading-lg"></span>
+        <span>Carregando mapa...</span>
+      </div>
+    </div>
+  </div>
+
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

@@ -1,0 +1,229 @@
+<div class="min-h-screen bg-base-200/50 font-quicksand">
+  <app-admin-navbar></app-admin-navbar>
+
+  <div class="p-8">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4">
+        <div>
+          <a routerLink="/admin" class="btn btn-ghost btn-sm gap-2 pl-0 mb-2 text-gray-500">
+            <span class="material-symbols-rounded">arrow_back</span> Voltar ao Painel
+          </a>
+          <h1 class="text-3xl font-bold text-primary">Catálogo de Árvores</h1>
+        </div>
+
+        <div class="flex gap-3 w-full md:w-auto items-center">
+          <div class="form-control w-full md:w-64 relative">
+            <span class="material-symbols-rounded absolute left-3 top-3 text-gray-400 text-xl">search</span>
+            <input
+              type="text"
+              [(ngModel)]="termoInput"
+              placeholder="Buscar espécie..."
+              class="input input-bordered w-full pl-10 focus:input-primary shadow-sm"
+              (input)="filtrar(termoInput)"
+            />
+          </div>
+
+          <button
+            (click)="abrirModalCadastro()"
+            class="btn btn-primary text-white shadow-lg hover:scale-105 transition-transform whitespace-nowrap gap-2"
+          >
+            <span class="material-symbols-rounded">forest</span>
+            <span class="hidden sm:inline">Nova Espécie</span>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="termoInput" class="alert alert-info shadow-md mb-6 flex justify-between items-center animate-fade-in-down">
+        <div class="flex items-center gap-3 text-white">
+          <span class="material-symbols-rounded text-3xl">filter_alt</span>
+          <div>
+            <h3 class="font-bold text-sm uppercase opacity-80">Filtro Ativo</h3>
+            <div class="text-lg">
+              Buscando por: <strong>{{ termoInput }}</strong>
+            </div>
+          </div>
+        </div>
+        <button (click)="limparBusca()" class="btn btn-sm btn-ghost text-white hover:bg-white/20 gap-2">
+          Limpar Busca
+          <span class="material-symbols-rounded text-sm">close</span>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border border-base-300">
+        <table class="table w-full">
+          <thead class="bg-base-100 text-base-content uppercase text-sm">
+            <tr>
+              <th>Espécie</th>
+              <th>Dados Técnicos</th>
+              <th>Ecologia (Bioma/Clima)</th>
+              <th class="text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let arvore of arvores$ | async" class="hover transition-colors">
+
+              <td>
+                <div class="font-bold text-base-content text-lg">{{ arvore.nomePopular }}</div>
+                <div class="text-sm text-gray-500 italic font-serif">{{ arvore.nomeCientifico }}</div>
+              </td>
+
+              <td>
+                <div class="flex flex-col gap-1 text-xs">
+                  <span class="badge badge-ghost badge-sm font-mono">CO2: {{ arvore.taxaAbsorcaoCo2Anual }} kg/ano</span>
+                  <span class="text-gray-600">Custo: <strong>R$ {{ arvore.custoMedioMuda | number:'1.2-2' }}</strong></span>
+                  <span class="text-gray-400">Maturação: {{ arvore.tempoMaturidadeAnos }} anos</span>
+                </div>
+              </td>
+
+              <td>
+                <div class="flex flex-col gap-2">
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let b of arvore.biomas" class="badge badge-success badge-outline badge-xs bg-success/5">
+                      {{ b.nome }}
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let c of arvore.climas" class="badge badge-info badge-outline badge-xs bg-info/5">
+                      {{ c.nome }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="text-right">
+                <button
+                  (click)="prepararEdicao(arvore)"
+                  class="btn btn-ghost btn-circle btn-sm text-info tooltip"
+                  data-tip="Editar"
+                >
+                  <span class="material-symbols-rounded">edit</span>
+                </button>
+                <button
+                  (click)="deletarArvore(arvore.id)"
+                  class="btn btn-ghost btn-circle btn-sm text-error tooltip"
+                  data-tip="Excluir"
+                >
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="(arvores$ | async)?.length === 0">
+              <td colspan="4" class="text-center py-16 text-gray-400">
+                <div class="flex flex-col items-center gap-2 animate-fade-in">
+                  <span class="material-symbols-rounded text-5xl opacity-30">nature_off</span>
+                  <p class="font-semibold">Nenhuma árvore encontrada.</p>
+                  <p class="text-sm opacity-70" *ngIf="termoInput">Tente outro termo de busca.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="modal_arvore" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div class="modal-box border border-base-300 shadow-2xl w-11/12 max-w-4xl">
+    <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-primary">
+      <span class="material-symbols-rounded">{{ arvoreEmEdicaoId ? 'edit' : 'add_circle' }}</span>
+      {{ arvoreEmEdicaoId ? 'Editar Espécie' : 'Cadastrar Nova Espécie' }}
+    </h3>
+
+    <form method="dialog" class="flex flex-col gap-6">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <h4 class="font-bold text-sm uppercase text-gray-400 border-b pb-1">Informações Gerais</h4>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text font-semibold">Nome Popular</span></label>
+            <input type="text" [(ngModel)]="novaArvore.nomePopular" name="nomePopular"
+                   class="input input-bordered w-full focus:input-primary" placeholder="Ex: Ipê Amarelo" maxlength="100" />
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text font-semibold">Nome Científico</span></label>
+            <input type="text" [(ngModel)]="novaArvore.nomeCientifico" name="nomeCientifico"
+                   class="input input-bordered w-full focus:input-primary italic" placeholder="Ex: Handroanthus albus" maxlength="100" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text font-semibold">Custo Muda (R$)</span></label>
+              <input type="number" [(ngModel)]="novaArvore.custoMedioMuda" name="custo"
+                     (keydown)="bloquearTeclasNaoNumericas($event)" step="0.01" min="0"
+                     class="input input-bordered w-full focus:input-primary" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text font-semibold">Absorção CO2 (kg/ano)</span></label>
+              <input type="number" [(ngModel)]="novaArvore.taxaAbsorcaoCo2Anual" name="co2"
+                     (keydown)="bloquearTeclasNaoNumericas($event)" step="0.1" min="0"
+                     class="input input-bordered w-full focus:input-primary" />
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h4 class="font-bold text-sm uppercase text-gray-400 border-b pb-1">Dados Técnicos & Ecológicos</h4>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div class="form-control">
+              <label class="label"><span class="label-text text-xs font-semibold">Maturidade (Anos)</span></label>
+              <input type="number" [(ngModel)]="novaArvore.tempoMaturidadeAnos" name="maturidade"
+                     class="input input-bordered w-full input-sm" min="0" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text text-xs font-semibold">Altura (m)</span></label>
+              <input type="number" [(ngModel)]="novaArvore.alturaMediaM" name="altura"
+                     class="input input-bordered w-full input-sm" step="0.1" min="0" />
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text text-xs font-semibold">Copa (m)</span></label>
+              <input type="number" [(ngModel)]="novaArvore.diametroCopaMedioM" name="copa"
+                     class="input input-bordered w-full input-sm" step="0.1" min="0" />
+            </div>
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text font-semibold">Biomas Compatíveis</span></label>
+            <select multiple [(ngModel)]="novaArvore.biomasIds" name="biomas" class="select select-bordered h-24 w-full focus:select-primary">
+              <option *ngFor="let bioma of biomas$ | async" [value]="bioma.id">{{ bioma.nome }}</option>
+            </select>
+            <label class="label"><span class="label-text-alt text-gray-400">Segure Ctrl (ou Cmd) para selecionar múltiplos</span></label>
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text font-semibold">Climas Adequados</span></label>
+            <select multiple [(ngModel)]="novaArvore.climasIds" name="climas" class="select select-bordered h-24 w-full focus:select-primary">
+              <option *ngFor="let clima of climas$ | async" [value]="clima.id">{{ clima.nome }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning text-sm py-2" *ngIf="!formularioValido && novaArvore.nomePopular !== ''">
+        <span class="material-symbols-rounded text-lg">warning</span>
+        <span>Preencha todos os campos obrigatórios e selecione ao menos 1 Bioma/Clima.</span>
+      </div>
+
+      <div class="modal-action mt-4 flex justify-end gap-3 border-t pt-4">
+        <button class="btn btn-ghost hover:bg-base-200">Cancelar</button>
+        <button
+          type="button"
+          (click)="salvarArvore()"
+          class="btn btn-primary text-white shadow-md"
+          [disabled]="!formularioValido"
+        >
+          <span class="material-symbols-rounded text-sm">check</span>
+          Salvar Espécie
+        </button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

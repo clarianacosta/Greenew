@@ -1,0 +1,242 @@
+<div class="min-h-screen bg-base-200/50 font-quicksand">
+  <app-admin-navbar></app-admin-navbar>
+
+  <div class="p-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4">
+        <div>
+          <a routerLink="/admin" class="btn btn-ghost btn-sm gap-2 pl-0 mb-2 text-gray-500">
+            <span class="material-symbols-rounded">arrow_back</span> Voltar ao Painel
+          </a>
+          <h1 class="text-3xl font-bold text-primary">Parceiros Produtores</h1>
+        </div>
+
+        <div class="flex gap-3 w-full md:w-auto items-center">
+          <div class="form-control w-full md:w-64 relative">
+            <span class="material-symbols-rounded absolute left-3 top-3 text-gray-400 text-xl"
+              >search</span
+            >
+            <input
+              type="text"
+              [(ngModel)]="termoInput"
+              placeholder="Buscar por nome ou email..."
+              class="input input-bordered w-full pl-10 focus:input-primary shadow-sm"
+              (input)="filtrar(termoInput)"
+            />
+          </div>
+
+          <button
+            (click)="abrirModalCadastro()"
+            class="btn btn-primary text-white shadow-lg hover:scale-105 transition-transform whitespace-nowrap gap-2"
+          >
+            <span class="material-symbols-rounded">person_add</span>
+            <span class="hidden sm:inline">Novo Produtor</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="termoInput"
+        class="alert alert-info shadow-md mb-6 flex justify-between items-center animate-fade-in-down"
+      >
+        <div class="flex items-center gap-3 text-white">
+          <span class="material-symbols-rounded text-3xl">filter_alt</span>
+          <div>
+            <h3 class="font-bold text-sm uppercase opacity-80">Filtro Ativo</h3>
+            <div class="text-lg">
+              Buscando por: <strong>{{ termoInput }}</strong>
+            </div>
+          </div>
+        </div>
+        <button
+          (click)="limparBusca()"
+          class="btn btn-sm btn-ghost text-white hover:bg-white/20 gap-2"
+        >
+          Limpar Busca
+          <span class="material-symbols-rounded text-sm">close</span>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border border-base-300">
+        <table class="table w-full">
+          <thead class="bg-base-100 text-base-content uppercase text-sm">
+            <tr>
+              <th>Produtor</th>
+              <th>Contato</th>
+              <th>Terrenos</th>
+              <th class="text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let produtor of produtores$ | async" class="hover transition-colors">
+              <td class="font-bold text-base-content">
+                <div class="flex items-center gap-3">
+                  <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-10">
+                      <span class="flex justify-center items-center w-10 h-10 rounded-full bg-slate-800 text-white text-xs font-bold">
+                        {{ obterIniciais(produtor.nomeCompleto) }}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="font-bold">{{ produtor.nomeCompleto }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div class="flex flex-col text-sm">
+                  <div class="flex items-center gap-1 text-gray-600 mb-1">
+                    <span class="material-symbols-rounded text-xs opacity-70">mail</span>
+                    {{ produtor.email }}
+                  </div>
+                  <div class="flex items-center gap-1 text-gray-500" *ngIf="produtor.celular">
+                    <span class="material-symbols-rounded text-xs opacity-70">call</span>
+                    {{ produtor.celular.replace('(\\d{2})(\\d{5})(\\d{4})', '($1) $2-$3') }}
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <a
+                  *ngIf="produtor.terrenos && produtor.terrenos.length > 0"
+                  [routerLink]="['/admin/terrenos']"
+                  [queryParams]="{ produtorId: produtor.id }"
+                  class="badge badge-ghost gap-1 cursor-pointer hover:badge-primary hover:text-white hover:scale-105 transition-all text-decoration-none border-base-300"
+                  title="Filtrar terrenos deste produtor"
+                >
+                  <span class="font-bold">{{ produtor.terrenos.length }}</span>
+                  {{ produtor.terrenos.length === 1 ? 'Terreno' : 'Terrenos' }}
+                </a>
+
+                <div
+                  class="text-gray-400 text-xs italic select-none flex items-center gap-1"
+                  *ngIf="!produtor.terrenos || produtor.terrenos.length === 0"
+                >
+                  <span class="material-symbols-rounded text-xs">location_off</span>
+                  Sem terrenos
+                </div>
+              </td>
+
+              <td class="text-right">
+                <a
+                  [routerLink]="['/admin/terrenos']"
+                  [queryParams]="{ produtorId: produtor.id, openModal: 'true' }"
+                  class="btn btn-ghost btn-circle btn-sm text-success tooltip"
+                  data-tip="Adicionar Terreno"
+                >
+                  <span class="material-symbols-rounded">add_location_alt</span>
+                </a>
+
+                <button
+                  (click)="prepararEdicao(produtor)"
+                  class="btn btn-ghost btn-circle btn-sm text-info tooltip"
+                  data-tip="Editar"
+                >
+                  <span class="material-symbols-rounded">edit</span>
+                </button>
+
+                <button
+                  (click)="deletarProdutor(produtor.id)"
+                  class="btn btn-ghost btn-circle btn-sm text-error tooltip"
+                  data-tip="Excluir"
+                >
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="(produtores$ | async)?.length === 0">
+              <td colspan="4" class="text-center py-16 text-gray-400">
+                <div class="flex flex-col items-center gap-2 animate-fade-in">
+                  <span class="material-symbols-rounded text-5xl opacity-30">person_search</span>
+                  <p class="font-semibold">Nenhum produtor encontrado.</p>
+                  <p class="text-sm opacity-70">Verifique o termo de busca ou cadastre um novo.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="modal_produtor" class="modal modal-bottom sm:modal-middle font-quicksand">
+  <div class="modal-box border border-base-300 shadow-2xl">
+    <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-primary">
+      <span class="material-symbols-rounded">{{ produtorEmEdicaoId ? 'edit' : 'person_add' }}</span>
+      {{ produtorEmEdicaoId ? 'Editar Produtor' : 'Novo Parceiro' }}
+    </h3>
+
+    <form method="dialog" class="flex flex-col gap-4">
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">Nome Completo</span></label>
+        <input
+          type="text"
+          [(ngModel)]="novoProdutor.nomeCompleto"
+          name="nomeCompleto"
+          placeholder="Ex: João da Silva"
+          class="input input-bordered w-full focus:input-primary"
+          [class.input-error]="contemSqlInjection(novoProdutor.nomeCompleto)"
+          maxlength="100"
+        />
+        <label class="label pb-0 pt-1" *ngIf="contemSqlInjection(novoProdutor.nomeCompleto)">
+          <span class="label-text-alt text-error flex items-center gap-1">
+            <span class="material-symbols-rounded text-xs">warning</span>
+            Caracteres inválidos detectados.
+          </span>
+        </label>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text font-semibold">E-mail</span></label>
+        <input
+          type="email"
+          [(ngModel)]="novoProdutor.email"
+          name="email"
+          placeholder="joao@email.com"
+          class="input input-bordered w-full focus:input-primary"
+          [class.input-error]="
+            (novoProdutor.email !== '' && !validarEmail(novoProdutor.email)) ||
+            contemSqlInjection(novoProdutor.email)
+          "
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text font-semibold">Celular / WhatsApp</span>
+          <span class="label-text-alt text-gray-400">Opcional</span>
+        </label>
+        <input
+          type="text"
+          [ngModel]="novoProdutor.celular"
+          (ngModelChange)="formatarCelular($event)"
+          (keydown)="bloquearTeclasNaoNumericas($event)"
+          name="celular"
+          placeholder="(00) 00000-0000"
+          class="input input-bordered w-full focus:input-primary font-mono"
+          maxlength="15"
+          inputmode="tel"
+        />
+      </div>
+
+      <div class="modal-action mt-8 flex justify-end gap-3 pt-4 border-t border-base-200">
+        <button class="btn btn-ghost hover:bg-base-200">Cancelar</button>
+        <button
+          type="button"
+          (click)="salvarProdutor()"
+          class="btn btn-primary text-white shadow-md gap-2"
+          [disabled]="!formularioValido"
+        >
+          <span class="material-symbols-rounded text-sm">check</span>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
